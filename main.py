@@ -20,6 +20,7 @@ def get_search_results(query):
   and return up to five books matching search query.
   """
   # TO DO: use regex to remove special chars from query, make lowercase
+  # TO DO: convert spaces to '+'s
   
   # construct endpoint URL
   api_prefix = 'https://www.googleapis.com/books/v1/volumes'
@@ -43,11 +44,7 @@ def get_search_results(query):
   results = response_dict['items']
   for record in results:
     book = record['volumeInfo']
-    newBook = {
-      'title': book['title'],
-      'author': book['authors'],
-      'publisher': book['publisher']
-    }
+    newBook = format_book(book)
     result_list.append(newBook)
   
   return(result_list)
@@ -63,17 +60,9 @@ def display_search_results(books):
   if len(books) == 0:
     print('Sorry, your search returned 0 books.')
   else:
-    print('\nMatching Results:\n')
-    print('------------------')
-    for (i, book) in enumerate(books, start=1):
-      title = book['title']
-      author = book['author'][0]
-      publisher = book['publisher']
-      print(f'Result {i}')
-      print(f'    Title: {title}')
-      print(f'    Author(s): {author}')
-      print(f'    Publisher: {publisher}')
-      print('\n')
+    print('\nMatching Results:')
+    print('------------------\n')
+    display_books_in_list(books)
 
   options = ['Save a book to my reading list', 'Start a new search', 'Exit to home']
   selection = select_from_menu(options)
@@ -81,15 +70,19 @@ def display_search_results(books):
   if selection == '1':
     id = input('Enter ID for book you would like to save:  ')
     index = int(id) - 1
-    print(books[index])
-    add_to_reading_list(books[index])
+    print(f'Saving: {books[index]}')
+
   elif selection == '2':
     search()
   elif selection == '3':
     main()
 
 ### READING LIST ###
-reading_list = ['onebook', 'twobook', 'threebook', 'fourbook']
+reading_list = [
+  {'title': 'onebook', 'author': 'oneauthor', 'publisher': 'onepublisher'},
+  {'title': 'twobook', 'author': 'twoauthor', 'publisher': 'twopublisher'},
+  {'title': 'threebook', 'author': 'threeauthor', 'publisher': 'threepublisher'},
+  {'title': 'fourbook', 'author': 'fourauthor', 'publisher': 'fourpublisher'}]
 
 def add_to_reading_list(book):
   """
@@ -108,15 +101,12 @@ def display_reading_list():
   else:
     print('\n ------------------- ')
     print('|  MY READING LIST  |')
-    print(' ------------------- ')
-    for (i, element) in enumerate(reading_list, start=1):
-      print(f'{i} - {element}')
-    print('\n')
+    print(' ------------------- \n')
+    display_books_in_list(reading_list)
 
 ### QUIT ###
 def quit():
   print("Thanks for using Books on 8th! Goodbye.")
-
 
 ### UTILITIES ###
 def select_from_menu(options_list): 
@@ -138,6 +128,29 @@ def select_from_menu(options_list):
   else:
     return selection
 
+def format_book(book):
+  return {
+      'title': book['title'],
+      'author': book['authors'],
+      'publisher': book['publisher']
+    }
+
+def format_query(query):
+  pass
+
+def display_books_in_list(books):
+  for (i, book) in enumerate(books, start=1):
+    title = book['title']
+    multiple_authors = isinstance(book['author'], list)
+    if multiple_authors:
+      author = ', '.join(book['author'])
+    else:
+      author = book['author']
+    publisher = book['publisher']
+    print(f'ID {i}')
+    print(f'    Title: {title}')
+    print(f'    Author(s): {author}')
+    print(f'    Publisher: {publisher}\n')
 
 ### RUN PROGRAM ###
 def main():
@@ -148,7 +161,7 @@ def main():
   print('\n ---------------- ')
   print('|  B00KS ON 8TH  |')
   print(' ---------------- ')
-  print('\nWelcome to Books on 8th! What would you like to do today?')
+  print('\nWelcome to Books on 8th!\n\nWhat would you like to do?')
 
   options = ['Search for books', 'View my reading list', 'Quit']
   selection = select_from_menu(options)
