@@ -2,7 +2,7 @@
 
 A command line application utilizing Google Books API. Allows user to search for books and save selections to a reading list.
 
-## Preview
+## Screenshot
 
 to come
 
