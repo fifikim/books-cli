@@ -15,6 +15,8 @@ def search():
   
   display_search_results(results)
 
+  # TO DO: 
+
 def get_search_results(query):
   """
   Connect to the API using the requests library
@@ -45,9 +47,7 @@ def get_search_results(query):
   results = response_dict['items']
   for record in results:
     book = record['volumeInfo']
-    print(book)
     newBook = format_book(book)
-    print(newBook)
     result_list.append(newBook)
   
   return(result_list)
@@ -57,9 +57,7 @@ def display_search_results(books):
   Print entries for up to five matching books.
   Display menu with available actions.
   """
-  # include error handling if no matches found
-  # extract info from response dictionary
-  # format & print records
+  # TO-DO include error handling if no matches found
   if len(books) == 0:
     print('Sorry, your search returned 0 books.')
   else:
@@ -76,6 +74,10 @@ def display_search_results(books):
     add_to_reading_list(books[index])
     print(f'Saving: {books[index]}')
 
+    # TO DO: would you like to save another? 
+    # - yes: prompt user for book id
+    # - no: select new search or go home
+
   elif selection == '2':
     search()
   elif selection == '3':
@@ -86,6 +88,8 @@ def add_to_reading_list(book):
   """
   Adds selected record to reading list.
   """
+  # TO DO: add validation to prevent duplicate records?
+  
   with open('reading_list.json','r+') as file:
     # load existing data into a dict
     file_data = json.load(file)
@@ -112,14 +116,20 @@ def display_reading_list():
   if len(reading_list) == 0:
     print('There are no books in your reading list.')
   else:
-    print('\n ------------------- ')
-    print('|  MY READING LIST  |')
-    print(' ------------------- \n')
+    print('\n ---------------- ')
+    print('|  READING LIST  |')
+    print(' ---------------- \n')
     display_books_in_list(reading_list)
 
 ### QUIT ###
 def quit():
-  print("Thanks for using Books on 8th! Goodbye.")
+  """
+  Search for books by user inputted query
+  """
+  print('\n ----------------- ')
+  print('|    GOOD-BYE!    |')
+  print(' ----------------- \n')
+  print("Thanks for using Books on 8th!\n")
 
 ### UTILITIES ###
 def select_from_menu(options_list): 
@@ -130,9 +140,8 @@ def select_from_menu(options_list):
   print('----------------------------')
   for (i, element) in enumerate(options_list, start=1):
     print(f'{i} - {element}')
-  print('\n')
 
-  selection = input('Please enter your selection:  ')
+  selection = input('\nPlease enter your selection:  ')
   
   # to-do: display error message if invalid type is entered (not int)
   # display error message if invalid selection is made
