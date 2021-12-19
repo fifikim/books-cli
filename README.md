@@ -2,7 +2,7 @@
 
 A command line application utilizing Google Books API. Allows user to search for books and save selections to a reading list.
 
-## Screenshot
+## Preview
 
 to come
 
@@ -22,7 +22,7 @@ It also meant that I had a lot of research to do! Since I'm self-taught in Pytho
 
 Before I got started, I spent half a day researching approaches to Python CLI's. Many examples I found relied heavily on dependencies (which I wanted to avoid), until I found a blog about building a command line weather forecaster. I built <a href='github.com/fifikim/weather-cli'>this weather app</a> to get a sense of my process, and then went to work on the books CLI.
 
-# Day One 
+### Day One 
 - Goals:
   ✅ Kanban board with user stories to guide feature implementation
   ✅ Pseudocode a skeleton of the app & then write each function
