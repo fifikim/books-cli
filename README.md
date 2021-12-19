@@ -37,7 +37,7 @@ Before I got started, I spent half a day researching approaches to Python CLI's.
   ❓ Have never written a test in Python - need to research tomorrow
   ❓ Unsure how to handle queries including special characters & spaces
 
-# Day Two 
+### Day Two 
 - Goals:
   - Work on blockers from yesterday - testing, special characters
   - Improve UX: 
