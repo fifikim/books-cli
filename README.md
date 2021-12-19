@@ -24,18 +24,18 @@ Before I got started, I spent half a day researching approaches to Python CLI's.
 
 # Day One 
 - Goals:
-  ✅ Kanban board with user stories to guide feature implementation
-  ✅ Pseudocode a skeleton of the app & then write each function
+  - ✅ Kanban board with user stories to guide feature implementation
+  - ✅ Pseudocode a skeleton of the app & then write each function
 
 - Wins: 
-  ✅ Created a working (buggy) version with decent UI. 
-  ✅ Figured out how to save reading list to a local json file so that it persists after app exits.
-  ✅ I got to code in Python again, yay!
+  - ✅ Created a working (buggy) version with decent UI. 
+  - ✅ Figured out how to save reading list to a local json file so that it persists after app exits.
+  - ✅ I got to code in Python again, yay!
 
 - Blockers:
-  👻 What is Python? lol - feeling amnesia & constant urge to hit that semicolon key
-  ❓ Have never written a test in Python - need to research tomorrow
-  ❓ Unsure how to handle queries including special characters & spaces
+  - 👻 What is Python? lol - feeling amnesia & constant urge to hit that semicolon key
+  - ❓ Have never written a test in Python - need to research tomorrow
+  - ❓ Unsure how to handle queries including special characters & spaces
 
 # Day Two 
 - Goals:
