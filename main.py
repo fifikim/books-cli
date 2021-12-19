@@ -11,11 +11,10 @@ def search():
   print(' ---------------- \n')
 
   query = input('Search for books containing the query:  ')
+  # TO DO: add escape key to cancel query
   results = get_search_results(query)
   
   display_search_results(results)
-
-  # TO DO: 
 
 def get_search_results(query):
   """
@@ -23,6 +22,7 @@ def get_search_results(query):
   and return up to five books matching search query.
   """
   # format query
+  # TO DO: implement format query fn to handle special chars, spaces, convert case
   f_query = format_query(query)
 
   # construct endpoint URL
@@ -70,6 +70,7 @@ def display_search_results(books):
 
   if selection == '1':
     id = input('Enter ID for book you would like to save:  ')
+    # TO DO: add escape key to cancel save
     index = int(id) - 1
     add_to_reading_list(books[index])
     print(f'Saving: {books[index]}')
@@ -89,7 +90,7 @@ def add_to_reading_list(book):
   Adds selected record to reading list.
   """
   # TO DO: add validation to prevent duplicate records?
-  
+
   with open('reading_list.json','r+') as file:
     # load existing data into a dict
     file_data = json.load(file)
