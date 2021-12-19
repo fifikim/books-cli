@@ -1,0 +1,38 @@
+{
+    "reading_list": [
+        {
+            "title": "onebook",
+            "author": "oneauthor",
+            "publisher": "onepublisher"
+        },
+        {
+            "title": "twobook",
+            "author": "twoauthor",
+            "publisher": "twopublisher"
+        },
+        {
+            "title": "threebook",
+            "author": "threeauthor",
+            "publisher": "threepublisher"
+        },
+        {
+            "title": "fourbook",
+            "author": "fourauthor",
+            "publisher": "fourpublisher"
+        },
+        {
+            "title": "Experiments in Personality: Volume 1 (Psychology Revivals)",
+            "author": [
+                "H.J. Eysenck"
+            ],
+            "publisher": "Routledge"
+        },
+        {
+            "title": "Experiments in Personality: Volume 1 (Psychology Revivals)",
+            "author": [
+                "H.J. Eysenck"
+            ],
+            "publisher": "Routledge"
+        }
+    ]
+}

@@ -1,4 +1,5 @@
 import requests
+import json
 
 ### SEARCH ###
 def search():
@@ -70,6 +71,7 @@ def display_search_results(books):
   if selection == '1':
     id = input('Enter ID for book you would like to save:  ')
     index = int(id) - 1
+    add_to_reading_list(books[index])
     print(f'Saving: {books[index]}')
 
   elif selection == '2':
@@ -78,23 +80,37 @@ def display_search_results(books):
     main()
 
 ### READING LIST ###
-reading_list = [
-  {'title': 'onebook', 'author': 'oneauthor', 'publisher': 'onepublisher'},
-  {'title': 'twobook', 'author': 'twoauthor', 'publisher': 'twopublisher'},
-  {'title': 'threebook', 'author': 'threeauthor', 'publisher': 'threepublisher'},
-  {'title': 'fourbook', 'author': 'fourauthor', 'publisher': 'fourpublisher'}]
-
 def add_to_reading_list(book):
   """
   Adds selected record to reading list.
   """
-  reading_list.append(book)
-  display_reading_list()
+  # python object to be appended
+  write_json(book)
+
+# function to add to JSON
+def write_json(new_data, filename='reading_list.json'):
+  with open(filename,'r+') as file:
+    # First we load existing data into a dict.
+    file_data = json.load(file)
+    # Join new_data with file_data inside emp_details
+    file_data["reading_list"].append(new_data)
+    # Sets file's current position at offset.
+    file.seek(0)
+    # convert back to json.
+    json.dump(file_data, file, indent = 4)
 
 def display_reading_list():
   """
   Print records of books saved to reading list.
   """
+  # open JSON reading list file
+  f = open('reading_list.json')
+
+  # return JSON object as a dictionary
+  data = json.load(f)
+
+  reading_list = data['reading_list']
+
   # include handling for empty list
   if len(reading_list) == 0:
     print('There are no books in your reading list.')
@@ -124,7 +140,7 @@ def select_from_menu(options_list):
   # to-do: display error message if invalid type is entered (not int)
   # display error message if invalid selection is made
   if int(selection) not in range(1, len(options_list) + 1):
-    print('Please choose a number from the selections listed.')
+    input('Please choose a number from the selections listed:  ')
   else:
     return selection
 
