@@ -20,13 +20,13 @@ def get_search_results(query):
   Connect to the API using the requests library
   and return up to five books matching search query.
   """
-  # TO DO: use regex to remove special chars from query, make lowercase
-  # TO DO: convert spaces to '+'s
-  
+  # format query
+  f_query = format_query(query)
+
   # construct endpoint URL
   api_prefix = 'https://www.googleapis.com/books/v1/volumes'
   api_key = 'AIzaSyBRv9nNOtXCLqu36oPqB8OsWwy5MfaCcBs'
-  api_endpoint = f'{api_prefix}?q={query}&key={api_key}&maxResults=5'
+  api_endpoint = f'{api_prefix}?q={f_query}&key={api_key}&maxResults=5'
 
   # use requests lib to fetch data from endpoint
   response = requests.get(api_endpoint)
@@ -45,7 +45,9 @@ def get_search_results(query):
   results = response_dict['items']
   for record in results:
     book = record['volumeInfo']
+    print(book)
     newBook = format_book(book)
+    print(newBook)
     result_list.append(newBook)
   
   return(result_list)
@@ -84,17 +86,12 @@ def add_to_reading_list(book):
   """
   Adds selected record to reading list.
   """
-  # python object to be appended
-  write_json(book)
-
-# function to add to JSON
-def write_json(new_data, filename='reading_list.json'):
-  with open(filename,'r+') as file:
-    # First we load existing data into a dict.
+  with open('reading_list.json','r+') as file:
+    # load existing data into a dict
     file_data = json.load(file)
-    # Join new_data with file_data inside emp_details
-    file_data["reading_list"].append(new_data)
-    # Sets file's current position at offset.
+    # join book with file_data inside reading_list 
+    file_data["reading_list"].append(book)
+    # sets file's current position at offset
     file.seek(0)
     # convert back to json.
     json.dump(file_data, file, indent = 4)
@@ -145,23 +142,26 @@ def select_from_menu(options_list):
     return selection
 
 def format_book(book):
+  multiple_authors = isinstance(book['authors'], list)
+  if multiple_authors:
+    author = ', '.join(book['authors'])
+  else:
+    author = book['authors']
   return {
       'title': book['title'],
-      'author': book['authors'],
+      'author': author,
       'publisher': book['publisher']
     }
 
 def format_query(query):
-  pass
+  # TO DO: use regex to remove special chars from query, make lowercase
+  # TO DO: convert spaces to '+'s
+  return query
 
 def display_books_in_list(books):
   for (i, book) in enumerate(books, start=1):
     title = book['title']
-    multiple_authors = isinstance(book['author'], list)
-    if multiple_authors:
-      author = ', '.join(book['author'])
-    else:
-      author = book['author']
+    author = book['author']
     publisher = book['publisher']
     print(f'ID {i}')
     print(f'    Title: {title}')
