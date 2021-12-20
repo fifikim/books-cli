@@ -1,12 +1,12 @@
 {
     "reading_list": [
-        "{\n    \"title\": \"Ubik\",\n    \"author\": \"Philip K. Dick\",\n    \"publisher\": \"Orion Publishing Group\"\n}",
-        "{\n    \"title\": \"The Left Hand of Darkness\",\n    \"author\": \"Ursula K. Le Guin\",\n    \"publisher\": \"Gollancz\"\n}",
         "{\n    \"title\": \"Kindred\",\n    \"author\": \"Octavia E. Butler\",\n    \"publisher\": \"Beacon Press\"\n}",
-        "{\n    \"title\": \"The Complete Stories of J. G. Ballard\",\n    \"author\": \"J. G. Ballard\",\n    \"publisher\": \"W. W. Norton & Company\"\n}",
         "{\n    \"title\": \"Dhalgren\",\n    \"author\": \"Samuel R. Delany\",\n    \"publisher\": \"Open Road Media\"\n}",
         "{\n    \"title\": \"Stories of Your Life and Others\",\n    \"author\": \"Ted Chiang\",\n    \"publisher\": \"Knopf\"\n}",
-        "{\n    \"title\": \"Experiments in Personality: Volume 1 (Psychology Revivals)\",\n    \"author\": \"H.J. Eysenck\",\n    \"publisher\": \"Routledge\"\n}",
-        "{\n    \"title\": \"Scientia Magna, Vol. 3, No. 1, 2007.\",\n    \"author\": \"Zhang Wenpeng, Hailong Li\",\n    \"publisher\": \"Infinite Study\"\n}"
+        "{\n    \"title\": \"The Left Hand of Darkness\",\n    \"author\": \"Ursula K. Le Guin\",\n    \"publisher\": \"Gollancz\"\n}",
+        "{\n    \"title\": \"Ubik\",\n    \"author\": \"Philip K. Dick\",\n    \"publisher\": \"Orion Publishing Group\"\n}",
+        "{\n    \"title\": \"Simians, Cyborgs, and Women\",\n    \"author\": \"Donna Haraway\",\n    \"publisher\": \"Routledge\"\n}",
+        "{\n    \"title\": \"Race After Technology\",\n    \"author\": \"Ruha Benjamin\",\n    \"publisher\": \"John Wiley & Sons\"\n}",
+        "{\n    \"title\": \"Mademoiselle Fifi\",\n    \"author\": \"Guy de Maupassant\",\n    \"publisher\": \"LGF/Le Livre de Poche\"\n}"
     ]
 }

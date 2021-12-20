@@ -27,7 +27,7 @@ Allows user to search for books and save selections to a reading list.
 
 ## Getting Started <a name = "getting_started"></a>
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. 
 
 ### Prerequisites 
 
@@ -81,38 +81,40 @@ Add notes about how to use the system.
 
 ## Process <a name = "process"></a>
 
-I decided to write this program in my weaker language of the two so far that I practice. I've just graduated a bootcamp concentrating on JavaScript & JS frameworks, so I thought this would be a great opportunity to refresh my rusty Python skills and demonstrate my range as a developer.
+I decided to build this app in my weaker language of the two that I practice so far. I've just graduated a bootcamp concentrating on JavaScript & JS frameworks, so I thought this would be a great opportunity to refresh my rusty Python skills and demonstrate my range as a developer.
 
-That meant that I had a lot of research to do! Since I'm self-taught in Python, this project required quite a few aspects that I'd never encountered in this language.
+That meant that I had a lot of research to do! Since I'm self-taught in Python, this project required quite a few aspects that I'd never encountered in this language. 
 
-Before I got started, I spent half a day researching approaches to Python CLI's. Many examples I found relied heavily on dependencies (which I wanted to avoid), until I found a blog about building a command line weather forecaster. I built <a href='github.com/fifikim/weather-cli'>this weather app</a> to get a sense of my process and then went to work on the books CLI.
+I wanted to avoid relying on using libraries, apart from built-in tools and those explicitly permitted in the instructions (to parse JSON & send API requests). 
+
+Before I got started, I spent half a day researching approaches to building Python CLI's. Many examples I found relied heavily on dependencies, until I found a blog about building a simple command line weather forecaster. I built <a href='github.com/fifikim/weather-cli'>this weather app</a> to get a sense of my process and then went to work on this Books CLI.
 
 ### Day One <a name = "day-one"></a>
 - Goals:
-  - ✅ Kanban board with user stories to guide feature implementation
-  - ✅ Pseudocode a skeleton of the app & then write each function
+  - Kanban board with user stories to guide feature implementation
+  - Pseudocode a skeleton of the app & then write each function
 
 - Wins: 
   - ✅ Created a working (buggy) version with decent UI. 
-  - ✅ Figured out how to save reading list to a local json file so that it persists after app exits.
+  - ✅ Figured out how to save reading list to a local json file so that data persists after app exits.
   - ✅ I got to code in Python again, yay!
 
 - Blockers:
   - 👻 What is Python? lol - feeling amnesia & constant urge to hit that semicolon key
-  - ❓ Have never written a test in Python - need to research tomorrow
+  - ❓ Have never written a test in Python (only Mocha/Chai for JS) - need to research tomorrow
   - ❓ Unsure how to handle queries including special characters 
 
 ### Day Two <a name = "day-two"></a>
 - Goals:
   - Work on blockers from yesterday - testing, special characters
   - Improve UX: 
-    - ✅ app should only exit when user decides to quit 
+    - app should only exit when user decides to quit 
     - let user cancel a search or save
     - add identifier to books (not displayed) to prevent saving duplicate entries
   - Look into ways to reduce coupling: ORM/encapsulation
-  - ✅ Modularize components for reusability & SOC 
-  - ✅ Break apart fns that aren't following SRP
-  - ✅ Create classes -- whoops!!!! Edit book & menu fns to use classes
+  - Modularize components for reusability & SOC 
+  - Break apart fns that aren't following SRP
+  - Create classes -- whoops!!!! Edit book & menu fns to use classes 
 
 - Wins:
   - ✅ Code feels much less redundant & cleaner after creating classes & methods.
@@ -129,21 +131,33 @@ Before I got started, I spent half a day researching approaches to Python CLI's.
   - Create tests
   - Implement try/except blocks to catch invalid user input
   - Keep looking for ways to DRY code, separate concerns, & decouple components
-  - Create installation instructions for user
 
 - Wins:
   - ✅ Learned how to color output to the terminal without installing additional libraries, using ANSI escape sequences (need to figure out how to test compatibility with other OS's)
+  - ✅ Read O'Reilly chapter on Python testing and took an online course about unit tests. Time consuming, but understood how to create my test file afterwards. 
 
 - Blockers:
+  - ❓ Realized that program won't run on Python 2, I think due to use of f-strings. Could convert all formatting to use string concatenation, but want to research building executable stand-alone apps to run on Mac/Unix & Windows.
+
 
 ## Author <a name = "author"></a>
 
 Sophia Kim <br/>
 mail@fifikim.com <br/>
 <a href="linkedin.com/in/fifikim">LinkedIn</a> <br/>
-portfolio under construction
 
 ## Acknowledgements <a name = "acknowledgements"></a>
 
-List of books and references consulted:
+Books and references consulted:
 - Clean Python, Sunil Kapil, Apress
+- Python Cookbook, David Beazley & Brian K. Jones, O'Reilly
+- Unittest: 
+  https://docs.python.org/3/library/unittest.html
+- Testing:
+  https://www.codecademy.com/courses/learn-intermediate-python-3/lessons/int-python-unit-testing/ (subscription required)
+- Coloring Output: 
+  https://stackabuse.com/how-to-print-colored-text-in-python/
+- Basic example of Python CLI fetching API data: 
+  https://python.plainenglish.io/writing-my-first-command-line-tool-part-1-of-2-71e30d68402c
+- Encoding/Decoding JSON <==> Custom Python Objects:
+  https://realpython.com/python-json/
