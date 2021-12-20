@@ -8,10 +8,11 @@ class Menu:
     self.options = options
 
   def select(self):
-    print(f'\n{styles["underline"]}What would you like to do?{styles["reset"]}')
+    print(style_output(f'\nWhat would you like to do?', 'underline'))
     for (i, element) in enumerate(self.options, start=1):
       label = options_dict[element]['label']
-      print(f'{styles["option"]}{i}{styles["reset"]} - {label}')
+      id = style_output(i, 'option')
+      print(f'{id} - {label}')
     print('\n')
 
     selection = input('Please enter your selection:  ')
@@ -31,10 +32,11 @@ class Header:
     margin = math.floor((35 - len(self.name)) / 2) * ' '
     border = '=' * 30
     border2 = '=' * 34
+    heading = style_output(self.name, 'header')
     print(f'\n\n   {border}')
-    print(f' {styles["border"]}{border2}')
-    print(f'={styles["header"]}{margin}{self.name}{margin}{styles["border"]}=')
-    print(f' {border2}{styles["reset"]}')
+    print(f" {style_output(border2, 'border')}")
+    print(f'={margin}{heading}{margin}=')
+    print(f" {style_output(border2, 'border')}")
     print(f'   {border}\n\n')
 
 class Book:
@@ -44,15 +46,29 @@ class Book:
     self.publisher = publisher
   
   def print(self):
-    print(f'    Title: {styles["italic"]}{self.title}{styles["reset"]}')
+    title = style_output(self.title, 'title')
+    print(f'    Title: {title}')
     print(f'    Author(s): {self.author}')
     print(f'    Publisher: {self.publisher}\n')
 
 # UTILITIES 
 def display_books(list):
   for (i, book) in enumerate(list, start=1):
-    print(f'{styles["success"]}ID {i}{styles["reset"]}')
+    print(style_output(f'ID {i}', 'success'))
     book.print()
+
+def style_output(string, style):
+  styles = {
+    'header': '\033[1;36m',
+    'underline': '\033[4;37m',
+    'border': '\033[0;35m',
+    'title': '\033[3;36m',
+    'option': '\033[0;33m',
+    'success': '\033[1;32m',
+    'warning': '\033[1;31m',
+    'reset': '\033[0;0m'
+  }
+  return f"{styles[style]}{string}{styles['reset']}"
 
 # SEARCH 
 def search():
@@ -68,7 +84,7 @@ def search():
   results = fetch_by(query)
 
   if results == False:
-    print('Sorry, your search returned 0 results.\n')
+    print(style_output(f'Sorry, your search returned 0 results.\n', 'warning'))
     menu = Menu(['search', 'view', 'exit'])
     menu.select()
   else:
@@ -109,7 +125,7 @@ def format_search_results(data):
   return results
 
 def display_results():
-  print(f'\n{styles["underline"]}Results matching your query:{styles["reset"]}')
+  print(style_output(f'\nResults matching your query:', 'underline'))
   display_books(search_results)
 
   menu = Menu(['save', 'new', 'view', 'exit'])
@@ -122,7 +138,7 @@ def save():
   # (use list comprehension to check if ID is in reading_list)
 
   write_to_saved(selection)
-  print(f'{styles["success"]}Saved: {selection}{styles["reset"]}')
+  print(style_output(f'\nSaved: {selection}', 'success'))
 
   menu = Menu(['another', 'new', 'view', 'exit'])
   menu.select()
@@ -143,7 +159,7 @@ def view_saved():
 
   #include handling for empty list
   if len(reading_list) == 0:
-    print('There are no books in your reading list.')
+    print(style_output('There are no books in your reading list.', 'warning'))
   else:
     # saved_books = format_saved_books(reading_list)
     display_books(reading_list)
@@ -175,7 +191,7 @@ def main():
   header = Header('home')
   header.print()
 
-  print(f'      {styles["header"]}Welcome to Books on 8th!{styles["reset"]}\n')
+  print(style_output('      Welcome to Books on 8th!\n', 'header'))
 
   menu = Menu(['search', 'view', 'quit'])
   menu.select()
@@ -212,16 +228,7 @@ options_dict = {
     'function': quit
   }
 }
-styles = {
-  'header': '\033[1;36m',
-  'underline': '\033[4;37m',
-  'border': '\033[0;35m',
-  'italic': '\033[3m',
-  'option': '\033[0;33m',
-  'success': '\033[1;32m',
-  'warning': '\033[1;31m',
-  'reset': '\033[0;0m'
-}
+
 
 if __name__ == '__main__': main()
 
