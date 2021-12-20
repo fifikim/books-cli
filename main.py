@@ -47,7 +47,8 @@ class Book:
     print(f'    Author(s): {self.author}')
     print(f'    Publisher: {self.publisher}')
 
-# UTILITIES 
+# SHARED UTILITIES 
+# validates that option selected is valid menu choice
 def validate_selection(message, list):
   max = len(list)
   alert = style_output(f'Invalid selection. Please choose from Options 1 - {max}.\n', 'warning')
@@ -66,11 +67,13 @@ def validate_selection(message, list):
   print(alert)
   validate_selection(message, list)
 
+# formats & numbers books in a printed list
 def display_books(list):
   for (i, book) in enumerate(list, start=1):
     print(style_output(f'ID {i}', 'success'))
     book.print()
 
+# applies text decorations to terminal output
 def style_output(string, style):
   styles = {
     'header': '\033[1;36m',
@@ -95,6 +98,7 @@ def search():
 
   display_results(results)
 
+# validates that search query is not blank
 def validate_query():
   query = input('Search for books containing the query:  ')
   if query:
@@ -103,6 +107,7 @@ def validate_query():
     print(style_output('Please enter a valid query.\n', 'warning'))
     validate_query()
 
+# submits api get request & returns relevant data from response
 def fetch_by(query):
   search_results.clear()
   response = requests.get(f'https://www.googleapis.com/books/v1/volumes?q={query}&maxResults=5').json()
@@ -116,6 +121,7 @@ def fetch_by(query):
   search_results.extend(format_search_results(response))
   return search_results
 
+# formats response data & saves as Book instance
 def format_search_results(data):
   results = []
   for item in data['items']:
@@ -135,6 +141,7 @@ def format_search_results(data):
     results.append(result)
   return results
 
+# prints formatted search results & new menu selections
 def display_results(results):
   if results == False:
     print(style_output('Sorry, your search returned 0 results.', 'warning'))
@@ -145,6 +152,7 @@ def display_results(results):
   menu = Menu(['save', 'new', 'view', 'exit'])
   menu.select()
 
+# saves selected book to reading list
 def save():
   num = validate_selection('Please enter the ID of the book to save:   ', search_results)
   selected_book = json.dumps(search_results[(num - 1)].__dict__, indent = 4)
@@ -157,6 +165,7 @@ def save():
   menu = Menu(['another', 'new', 'view', 'exit'])
   menu.select()
 
+# appends book data to reading_list.json file
 def write_to_saved(book):
   with open('reading_list.json','r+') as file:
     file_data = json.load(file)
@@ -164,7 +173,7 @@ def write_to_saved(book):
     file.seek(0)
     json.dump(file_data, file, indent = 4)
 
-# VIEW READING LIST 
+# VIEW READING LIST PAGE
 def view_saved():
   header = Header('reading list')
   header.print()
@@ -181,6 +190,7 @@ def view_saved():
   menu = Menu(['search', 'exit'])
   menu.select()
 
+# loads data from reading_list.json file & formats each entry as Book instance
 def load_saved():
   # open JSON file & extract list
   f = open('reading_list.json')
@@ -194,13 +204,13 @@ def load_saved():
     books.append(Book(book['title'], book['author'], book['publisher']))
   return books
 
-# QUIT 
+# QUIT PAGE
 def quit():
   quit_header = Header('quit')
   quit_header.print()
   print(style_output('Thanks for using Books on 8th! Goodbye.', 'success'))
 
-# MAIN
+# HOME PAGE
 def main():
   header = Header('home')
   header.print()

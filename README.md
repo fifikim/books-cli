@@ -8,7 +8,7 @@ Allows user to search for books and save selections to a reading list.
 <p align="center">
   <a href="" rel="noopener">
   <img width=200px height=200px src="https://i.imgur.com/6wj0hh6.jpg" alt="Project logo"></a></br>
-  (preview gif)
+  (preview gif to come)
 </p>
 </div>
 
