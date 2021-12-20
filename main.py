@@ -36,136 +36,103 @@ class Header:
     print(f'{margin}{self.name}{margin}')
     print(f'{border}\n')
 
-class Query:
-  def __init__(self, query):
-    self.query = query.lower()
-
-  def format(self):
-    # TO DO: use regex to remove special chars from query, make lowercase
-    # TO DO: convert spaces to '+'s
-    return self.query
-
 class Book:
-  def __init__(self, book):
-    self.book = book
-    self.title = book['title']
-    self.author = book['author']
-    self.publisher = book['publisher']
+  def __init__(self, title, author, publisher):
+    self.title = title
+    self.author = author
+    self.publisher = publisher
   
   def print(self):
     print(f'    Title: {self.title}')
     print(f'    Author(s): {self.author}')
     print(f'    Publisher: {self.publisher}\n')
 
-# UTILITIES 
-def format_book(book):
-  multiple_authors = isinstance(book['authors'], list)
-  if multiple_authors:
-    author = ', '.join(book['authors'])
-  else:
-    author = book['authors']
-  return {
-      'title': book['title'],
-      'author': author,
-      'publisher': book['publisher']
+  def json(self):
+    return {
+      "title": f"{self.title}",
+      "author": f"{self.author}",
+      "publisher": f"{self.author}"
     }
 
-def display_books_in_list(books):
-  for (i, book) in enumerate(books, start=1):
-    print(f'ID {i}')
-    current_book = Book(book)
-    current_book.print()
+# UTILITIES 
+def format_books(data):
+  books = []
+  for item in data['items']:
+    if 'title' not in item['volumeInfo']:
+      title = ''
+    else:
+      title = item['volumeInfo']['title']
+    if 'authors' not in item['volumeInfo']:
+      author = ''
+    else:
+      author = ', '.join(item['volumeInfo']['authors'])
+    if 'publisher' not in item['volumeInfo']:
+      publisher = ''
+    else: 
+      publisher = item['volumeInfo']['publisher']
+    book = Book(title, author, publisher)
+    books.append(book)
+  return books
 
-def confirm(action):
-  confirm = input(f'Are you sure you want to {action}? (Enter "y"/"n")')
-  if confirm == 'y':
-    pass
-  elif confirm == 'n':
-    pass
-  else:
-    print('Please enter "y" or "n"')
+def display_books(list):
+  for (i, book) in enumerate(list, start=1):
+    print(f'ID {i}')
+    book.print()
 
 # SEARCH 
 def search():
-  search_header = Header('search')
-  search_header.print()
+  header = Header('search')
+  header.print()
 
   query = input('Search for books containing the query:  ').lower()
 
   # TO DO: add escape key to cancel query
   results = get_search_results(query)
-  display_search_results(results)
+
+  if results == False:
+    print('Sorry, your search returned 0 results.')
+    menu = Menu(['search', 'view', 'exit'])
+    menu.print()
+  else:
+    display_search_results()
 
 def get_search_results(query):
-  '''
-  Connect to the API using the requests library
-  and return up to five books matching search query.
-  '''
-  # format query
-  # TO DO: implement format query fn to handle special chars, spaces, convert case
-
-
-  # construct endpoint URL
-  api_prefix = 'https://www.googleapis.com/books/v1/volumes'
-  api_key = 'AIzaSyBRv9nNOtXCLqu36oPqB8OsWwy5MfaCcBs'
-  api_endpoint = f'{api_prefix}?q={query}&key={api_key}&maxResults=5'
-
-  # use requests lib to fetch data from endpoint
-  response = requests.get(api_endpoint)
+  search_results.clear()
+  response = requests.get(f'https://www.googleapis.com/books/v1/volumes?q={query}&maxResults=5').json()
 
   # if request fails, return false
-  if response.status_code != 200:
+  if response['totalItems'] == 0:
     return False
   
-  # convert response obj to dictionary
-  response_dict = response.json()
+  # convert response obj to dictionary & format data
+  search_results.extend(format_books(response))
+  return search_results
 
-  # create new dictionary for relevant data 
-  result_list = []
+def display_search_results():
+  print('\nMatching Results:')
+  print('------------------\n')
+  display_books(search_results)
 
-  # extract from response
-  results = response_dict['items']
-  for record in results:
-    book = record['volumeInfo']
-    newBook = format_book(book)
-    result_list.append(newBook)
-  
-  return(result_list)
+  menu = Menu(['save', 'new', 'view', 'exit'])
+  menu.print()
 
-def display_search_results(books):
-  """
-  Print entries for up to five matching books.
-  Display menu with available actions.
-  """
-  # TO-DO include error handling if no matches found
-  if len(books) == 0:
-    print('Sorry, your search returned 0 books.')
-  else:
-    print('\nMatching Results:')
-    print('------------------\n')
-    display_books_in_list(books)
-
-  search_menu = Menu(['save', 'start', 'exit'])
-  search_menu.print()
-
-    # TO DO: would you like to save another? 
-    # - yes: prompt user for book id
-    # - no: select new search or go home
-
-### READING LIST ###
-def save_to_reading_list(book):
-
+def save():
+  num = input('Enter the ID of the book to save:  ')
+  book = search_results[int(num) - 1].json()
   # TO DO: add validation to prevent duplicate records?
+  
   with open('reading_list.json','r+') as file:
-    # load existing data into a dict
     file_data = json.load(file)
-    # join book with file_data inside reading_list 
     file_data["reading_list"].append(book)
-    # sets file's current position at offset
     file.seek(0)
-    # convert back to json.
     json.dump(file_data, file, indent = 4)
 
+  print(f'Saved: {book}')
+
+  menu = Menu(['another', 'new', 'view', 'exit'])
+  menu.print()
+
+# READING LIST 
 def view_list():
   # open JSON reading list file
   f = open('reading_list.json')
@@ -178,39 +145,51 @@ def view_list():
   if len(reading_list) == 0:
     print('There are no books in your reading list.')
   else:
-    reading_list_header = Header('reading list')
-    reading_list_header.print()
-    display_books_in_list(reading_list)
+    header = Header('reading list')
+    header.print()
 
-  reading_list_menu = Menu(['search', 'exit'])
-  reading_list_menu.print()
+    formatted = []
+    for book in reading_list:
+      formatted.append(Book(book['title'], book['author'], book['publisher']))
+    display_books(formatted)
 
-### QUIT ###
+  menu = Menu(['search', 'exit'])
+  menu.print()
+
+# QUIT 
 def quit():
   quit_header = Header('quit')
   quit_header.print()
   print("Thanks for using Books on 8th!\n")
 
+# MAIN
 def main():
-  '''
-  Set up the main program.
-  '''
-  main_header = Header('main')
-  main_header.print()
+  header = Header('main')
+  header.print()
+
   print('\n     Welcome to Books on 8th!')
   print('     ~~~~~~~~~~~~~~~~~~~~~~~~\n')
 
-  main_menu = Menu(['search', 'view', 'quit'])
-  main_menu.print()
+  menu = Menu(['search', 'view', 'quit'])
+  menu.print()
 
+search_results = []
 options_dict = {
   'search': {
     'label': 'Search for books',
     'function': search
   }, 
+  'new': {
+    'label': 'Start a new search',
+    'function': search
+  }, 
   'save': {
     'label': 'Save a book to my reading list',
-    'function': save_to_reading_list
+    'function': save
+  },
+  'another': {
+    'label': 'Save another book to my reading list',
+    'function': save
   },
   'view': {
     'label': 'View my reading list',
