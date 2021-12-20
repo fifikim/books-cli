@@ -8,11 +8,10 @@ class Menu:
     self.options = options
 
   def select(self):
-    print('\nWhat would you like to do?')
-    print('--------------------------')
+    print(f'\n{styles["underline"]}What would you like to do?{styles["reset"]}')
     for (i, element) in enumerate(self.options, start=1):
       label = options_dict[element]['label']
-      print(f'{i} - {label}')
+      print(f'{styles["option"]}{i}{styles["reset"]} - {label}')
     print('\n')
 
     selection = input('Please enter your selection:  ')
@@ -30,10 +29,13 @@ class Header:
   
   def print(self):
     margin = math.floor((35 - len(self.name)) / 2) * ' '
-    border = '=' * 35
-    print(f'\n\n{border}')
-    print(f'{margin}{self.name}{margin}')
-    print(f'{border}\n\n')
+    border = '=' * 30
+    border2 = '=' * 34
+    print(f'\n\n   {border}')
+    print(f' {styles["border"]}{border2}')
+    print(f'={styles["header"]}{margin}{self.name}{margin}{styles["border"]}=')
+    print(f' {border2}{styles["reset"]}')
+    print(f'   {border}\n\n')
 
 class Book:
   def __init__(self, title, author, publisher):
@@ -42,14 +44,14 @@ class Book:
     self.publisher = publisher
   
   def print(self):
-    print(f'    Title: {self.title}')
+    print(f'    Title: {styles["italic"]}{self.title}{styles["reset"]}')
     print(f'    Author(s): {self.author}')
     print(f'    Publisher: {self.publisher}\n')
 
 # UTILITIES 
 def display_books(list):
   for (i, book) in enumerate(list, start=1):
-    print(f'ID {i}')
+    print(f'{styles["success"]}ID {i}{styles["reset"]}')
     book.print()
 
 # SEARCH 
@@ -60,6 +62,9 @@ def search():
   query = input('Search for books containing the query:  ').lower()
   # TO DO: handle empty query 
   # TO DO: add escape key to cancel query
+
+  # validate_query()
+
   results = fetch_by(query)
 
   if results == False:
@@ -69,6 +74,9 @@ def search():
   else:
     display_results()
 
+def validate_query(input):
+  pass
+
 def fetch_by(query):
   search_results.clear()
   response = requests.get(f'https://www.googleapis.com/books/v1/volumes?q={query}&maxResults=5').json()
@@ -77,7 +85,7 @@ def fetch_by(query):
   if response['totalItems'] == 0:
     return False
   
-  # convert response obj to dictionary & format data
+  # format data & save to local temp storage
   search_results.extend(format_search_results(response))
   return search_results
 
@@ -101,8 +109,7 @@ def format_search_results(data):
   return results
 
 def display_results():
-  print('\nMatching Results:')
-  print('------------------\n')
+  print(f'\n{styles["underline"]}Results matching your query:{styles["reset"]}')
   display_books(search_results)
 
   menu = Menu(['save', 'new', 'view', 'exit'])
@@ -112,9 +119,10 @@ def save():
   num = int(input('Enter the ID of the book to save:  '))
   selection = json.dumps(search_results[num - 1].__dict__, indent = 4)
   # TO DO: add validation to prevent duplicate records?
+  # (use list comprehension to check if ID is in reading_list)
 
   write_to_saved(selection)
-  print(f'Saved: {selection}')
+  print(f'{styles["success"]}Saved: {selection}{styles["reset"]}')
 
   menu = Menu(['another', 'new', 'view', 'exit'])
   menu.select()
@@ -164,15 +172,15 @@ def quit():
 
 # MAIN
 def main():
-  header = Header('main')
+  header = Header('home')
   header.print()
 
-  print('\n     Welcome to Books on 8th!')
-  print('     ~~~~~~~~~~~~~~~~~~~~~~~~\n')
+  print(f'      {styles["header"]}Welcome to Books on 8th!{styles["reset"]}\n')
 
   menu = Menu(['search', 'view', 'quit'])
   menu.select()
 
+# GLOBAL VARIABLES
 search_results = []
 options_dict = {
   'search': {
@@ -203,6 +211,16 @@ options_dict = {
     'label': 'Quit',
     'function': quit
   }
+}
+styles = {
+  'header': '\033[1;36m',
+  'underline': '\033[4;37m',
+  'border': '\033[0;35m',
+  'italic': '\033[3m',
+  'option': '\033[0;33m',
+  'success': '\033[1;32m',
+  'warning': '\033[1;31m',
+  'reset': '\033[0;0m'
 }
 
 if __name__ == '__main__': main()
