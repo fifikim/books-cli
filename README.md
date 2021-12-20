@@ -1,6 +1,7 @@
 # Books on 8th
 
-A command line application utilizing Google Books API. Allows user to search for books and save selections to a reading list.
+A command line application utilizing Google Books API. 
+Allows user to search for books and save selections to a reading list.
 
 ## Screenshot
 
@@ -46,9 +47,25 @@ Before I got started, I spent half a day researching approaches to Python CLI's.
     - add identifier to books (not displayed) to prevent saving duplicate entries
   - Look into ways to reduce coupling: ORM/encapsulation
   - ✅ Modularize components for reusability & SOC 
-  - Break apart fns that aren't following SRP
+  - ✅ Break apart fns that aren't following SRP
   - ✅ Create classes -- whoops!!!! Edit book & menu fns to use classes
 
 - Wins:
+  - ✅ Code feels much less redundant & cleaner after creating classes & methods.
+  - ✅ Better user flow, fewer unexpected terminations/dead ends
+
+- Blockers:
+  - ⏳ Took a long time to switch from functional to OOP mindset
+  - ❓ Not sure how to let user cancel out of input prompt without exiting program
+
+### Day Three 
+- Goals:
+  - Create tests
+  - Implement try/except blocks to catch invalid user input
+  - Keep looking for ways to DRY code, separate concerns, & decouple components
+  - Create installation instructions for user
+
+- Wins:
+  - 
 
 - Blockers:

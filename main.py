@@ -31,7 +31,6 @@ class Header:
   def print(self):
     margin = math.floor((35 - len(self.name)) / 2) * ' '
     border = '=' * 35
-
     print(f'\n\n{border}')
     print(f'{margin}{self.name}{margin}')
     print(f'{border}\n\n')
@@ -48,8 +47,42 @@ class Book:
     print(f'    Publisher: {self.publisher}\n')
 
 # UTILITIES 
+def display_books(list):
+  for (i, book) in enumerate(list, start=1):
+    print(f'ID {i}')
+    book.print()
+
+# SEARCH 
+def search():
+  header = Header('search')
+  header.print()
+
+  query = input('Search for books containing the query:  ').lower()
+  # TO DO: handle empty query 
+  # TO DO: add escape key to cancel query
+  results = fetch_by(query)
+
+  if results == False:
+    print('Sorry, your search returned 0 results.\n')
+    menu = Menu(['search', 'view', 'exit'])
+    menu.select()
+  else:
+    display_results()
+
+def fetch_by(query):
+  search_results.clear()
+  response = requests.get(f'https://www.googleapis.com/books/v1/volumes?q={query}&maxResults=5').json()
+
+  # if request fails, return false
+  if response['totalItems'] == 0:
+    return False
+  
+  # convert response obj to dictionary & format data
+  search_results.extend(format_search_results(response))
+  return search_results
+
 def format_search_results(data):
-  books = []
+  results = []
   for item in data['items']:
     if 'title' not in item['volumeInfo']:
       title = ''
@@ -63,52 +96,11 @@ def format_search_results(data):
       publisher = ''
     else: 
       publisher = item['volumeInfo']['publisher']
-    book = Book(title, author, publisher)
-    books.append(book)
-  return books
+    result = Book(title, author, publisher)
+    results.append(result)
+  return results
 
-def display_books(list):
-  for (i, book) in enumerate(list, start=1):
-    print(f'ID {i}')
-    book.print()
-
-def json_list_to_books(data):
-  books = []
-  for record in data:
-    book = json.loads(record)
-    books.append(Book(book['title'], book['author'], book['publisher']))
-  return books
-
-# SEARCH 
-def search():
-  header = Header('search')
-  header.print()
-
-  query = input('Search for books containing the query:  ').lower()
-  # TO DO: handle empty query 
-  # TO DO: add escape key to cancel query
-  results = get_search_results(query)
-
-  if results == False:
-    print('Sorry, your search returned 0 results.')
-    menu = Menu(['search', 'view', 'exit'])
-    menu.select()
-  else:
-    display_search_results()
-
-def get_search_results(query):
-  search_results.clear()
-  response = requests.get(f'https://www.googleapis.com/books/v1/volumes?q={query}&maxResults=5').json()
-
-  # if request fails, return false
-  if response['totalItems'] == 0:
-    return False
-  
-  # convert response obj to dictionary & format data
-  search_results.extend(format_search_results(response))
-  return search_results
-
-def display_search_results():
+def display_results():
   print('\nMatching Results:')
   print('------------------\n')
   display_books(search_results)
@@ -118,39 +110,51 @@ def display_search_results():
 
 def save():
   num = int(input('Enter the ID of the book to save:  '))
-  book = json.dumps(search_results[num - 1].__dict__, indent = 4)
+  selection = json.dumps(search_results[num - 1].__dict__, indent = 4)
   # TO DO: add validation to prevent duplicate records?
-  
+
+  write_to_saved(selection)
+  print(f'Saved: {selection}')
+
+  menu = Menu(['another', 'new', 'view', 'exit'])
+  menu.select()
+
+def write_to_saved(book):
   with open('reading_list.json','r+') as file:
     file_data = json.load(file)
     file_data["reading_list"].append(book)
     file.seek(0)
     json.dump(file_data, file, indent = 4)
 
-  print(f'Saved: {book}')
-
-  menu = Menu(['another', 'new', 'view', 'exit'])
-  menu.select()
-
 # READING LIST 
-def view_list():
+def view_saved():
   header = Header('reading list')
   header.print()
 
-  # open JSON file & extract list
-  f = open('reading_list.json')
-  data = json.load(f)
-  reading_list = data['reading_list']
+  reading_list = load_saved()
 
   #include handling for empty list
   if len(reading_list) == 0:
     print('There are no books in your reading list.')
   else:
-    saved_books = json_list_to_books(reading_list)
-    display_books(saved_books)
+    # saved_books = format_saved_books(reading_list)
+    display_books(reading_list)
 
   menu = Menu(['search', 'exit'])
   menu.select()
+
+def load_saved():
+  # open JSON file & extract list
+  f = open('reading_list.json')
+  data = json.load(f)
+  list = data['reading_list']
+
+  # format JSON strings as list of Book instances
+  books = []
+  for record in list:
+    book = json.loads(record)
+    books.append(Book(book['title'], book['author'], book['publisher']))
+  return books
 
 # QUIT 
 def quit():
@@ -189,7 +193,7 @@ options_dict = {
   },
   'view': {
     'label': 'View my reading list',
-    'function': view_list
+    'function': view_saved
   }, 
   'exit': {
     'label': 'Exit to home',
