@@ -7,19 +7,26 @@ class Menu:
   def __init__(self, options):
     self.options = options
 
-  def select(self):
+  def print(self):
     print(style_output('\n\nWhat would you like to do?', 'underline'))
     for (i, element) in enumerate(self.options, start=1):
       label = options_dict[element]['label']
       id = style_output(i, 'option')
       print(f'{id} - {label}')
     print('\n')
+    self.select()
 
-    val = validate_selection('Please enter your selection:  ', self.options)
-    print(f'value {val}')
-    option = self.options[(val - 1)]
-    options_dict[option]['function']()
+  def select(self):
+    selection = input('Please enter your selection:  ')
+    valid = validate_selection(selection, self.options)
 
+    if valid: 
+      option = self.options[int(selection) - 1]
+      options_dict[option]['function']()
+    else:
+      print(style_output(f'Invalid selection. Please choose from Options #1-{len(self.options)}.\n', 'warning'))
+      self.select()
+    
 class Header:
   def __init__(self, name):
     self.name = name.upper()
@@ -48,24 +55,18 @@ class Book:
     print(f'    Publisher: {self.publisher}')
 
 # SHARED UTILITIES 
-# validates that option selected is valid menu choice
-def validate_selection(message, list):
+# validates that user-selected option is valid menu choice
+def validate_selection(val, list):
   max = len(list)
-  alert = style_output(f'Invalid selection. Please choose from Options 1 - {max}.\n', 'warning')
-
-  selection = input(message)
-  print(f'list {list}')
-  if selection:
+  if val:
     try:
-      val = int(selection)
-      if val in range(1, (max + 1)):
-        print(f'val {val}')
-        return val
+      num = int(val)
+      if num in range(1, (max + 1)):
+        return True
+      else:
+        return False
     except ValueError:
-      print(alert)
-      validate_selection(message, list)
-  print(alert)
-  validate_selection(message, list)
+      return False
 
 # formats & numbers books in a printed list
 def display_books(list):
@@ -75,6 +76,7 @@ def display_books(list):
 
 # applies text decorations to terminal output
 def style_output(string, style):
+  reset = '\033[0;0m'
   styles = {
     'header': '\033[1;36m',
     'underline': '\033[4;37m',
@@ -83,9 +85,8 @@ def style_output(string, style):
     'option': '\033[0;33m',
     'success': '\033[1;32m',
     'warning': '\033[1;31m',
-    'reset': '\033[0;0m'
   }
-  return f"{styles[style]}{string}{styles['reset']}"
+  return f"{styles[style]}{string}{reset}"
 
 # SEARCH FOR BOOKS
 def search():
@@ -116,7 +117,6 @@ def fetch_by(query):
   if response['totalItems'] == 0:
     return False
   
-  # print(response)
   # format data & save to local temp storage
   search_results.extend(format_search_results(response))
   return search_results
@@ -150,20 +150,25 @@ def display_results(results):
     display_books(search_results)
 
   menu = Menu(['save', 'new', 'view', 'exit'])
-  menu.select()
+  menu.print()
 
 # saves selected book to reading list
 def save():
-  num = validate_selection('Please enter the ID of the book to save:   ', search_results)
-  selected_book = json.dumps(search_results[(num - 1)].__dict__, indent = 4)
-  # TO DO: add validation to prevent duplicate records?
-  # (use list comprehension to check if ID is in reading_list)
+  selection = input('Please enter the ID of the book to save:   ')
+  valid = validate_selection(selection, search_results)
 
-  write_to_saved(selected_book)
-  print(style_output(f'Saved: {selected_book}', 'success'))
+  if valid: 
+    selected_book = json.dumps(search_results[int(selection) - 1].__dict__, indent = 4)
+    write_to_saved(selected_book)
 
-  menu = Menu(['another', 'new', 'view', 'exit'])
-  menu.select()
+    print(style_output(f'Saved: {selected_book}', 'success'))
+
+    menu = Menu(['another', 'new', 'view', 'exit'])
+    menu.print()
+
+  else:
+    print(style_output(f'Invalid selection. Please choose from IDs #1-{len(search_results)}.\n', 'warning'))
+    save()
 
 # appends book data to reading_list.json file
 def write_to_saved(book):
@@ -184,11 +189,10 @@ def view_saved():
   if len(reading_list) == 0:
     print(style_output('There are no books in your reading list.', 'warning'))
   else:
-    # saved_books = format_saved_books(reading_list)
     display_books(reading_list)
 
   menu = Menu(['search', 'exit'])
-  menu.select()
+  menu.print()
 
 # loads data from reading_list.json file & formats each entry as Book instance
 def load_saved():
@@ -208,7 +212,7 @@ def load_saved():
 def quit():
   quit_header = Header('quit')
   quit_header.print()
-  print(style_output('Thanks for using Books on 8th! Goodbye.', 'success'))
+  print(style_output('\nThanks for using Books on 8th! Goodbye.\n', 'success'))
 
 # HOME PAGE
 def main():
@@ -218,7 +222,7 @@ def main():
   print(style_output('      Welcome to Books on 8th!', 'header'))
 
   menu = Menu(['search', 'view', 'quit'])
-  menu.select()
+  menu.print()
 
 # GLOBAL VARIABLES
 search_results = []

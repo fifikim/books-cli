@@ -133,6 +133,7 @@ Before I got started, I spent half a day researching approaches to building Pyth
   - Keep looking for ways to DRY code, separate concerns, & decouple components
 
 - Wins:
+  - ✅ Validation handles invalid/blank input for menu selection & search queries
   - ✅ Learned how to color output to the terminal without installing additional libraries, using ANSI escape sequences (need to figure out how to test compatibility with other OS's)
   - ✅ Read O'Reilly chapter on Python testing and took an online course about unit tests. Time consuming, but understood how to create my test file afterwards. 
 
