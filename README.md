@@ -1,6 +1,7 @@
 # Books on 8th
 
-A command line application utilizing Google Books API. Allows user to search for books and save selections to a reading list.
+A command line application utilizing Google Books API. 
+Allows user to search for books and save selections to a reading list.
 
 ## Screenshot
 
@@ -35,21 +36,36 @@ Before I got started, I spent half a day researching approaches to Python CLI's.
 - Blockers:
   - 👻 What is Python? lol - feeling amnesia & constant urge to hit that semicolon key
   - ❓ Have never written a test in Python - need to research tomorrow
-  - ❓ Unsure how to handle queries including special characters & spaces
+  - ❓ Unsure how to handle queries including special characters 
 
 ### Day Two 
 - Goals:
   - Work on blockers from yesterday - testing, special characters
   - Improve UX: 
-    - app should only exit when user decides to quit 
+    - ✅ app should only exit when user decides to quit 
     - let user cancel a search or save
     - add identifier to books (not displayed) to prevent saving duplicate entries
-    - write help files?
   - Look into ways to reduce coupling: ORM/encapsulation
-  - Modularize components for reusability & SOC 
-  - Break apart fns that aren't following SRP
-  - Create classes -- whoops!!!! Edit book & menu fns to use classes
+  - ✅ Modularize components for reusability & SOC 
+  - ✅ Break apart fns that aren't following SRP
+  - ✅ Create classes -- whoops!!!! Edit book & menu fns to use classes
 
 - Wins:
+  - ✅ Code feels much less redundant & cleaner after creating classes & methods.
+  - ✅ Better user flow, fewer unexpected terminations/dead ends
+
+- Blockers:
+  - ⏳ Took a long time to switch from functional to OOP mindset
+  - ❓ Not sure how to let user cancel out of input prompt without exiting program
+
+### Day Three 
+- Goals:
+  - Create tests
+  - Implement try/except blocks to catch invalid user input
+  - Keep looking for ways to DRY code, separate concerns, & decouple components
+  - Create installation instructions for user
+
+- Wins:
+  - 
 
 - Blockers:

@@ -1,203 +1,209 @@
-import requests
 import json
+import requests
+import math 
 
-### SEARCH ###
-def search():
-  """
-  Search for books by user inputted query
-  """
-  print('\n ---------------- ')
-  print('|  SEARCH BOOKS  |')
-  print(' ---------------- \n')
+# CLASSES
+class Menu:
+  def __init__(self, options):
+    self.options = options
 
-  query = input('Search for books containing the query:  ')
-  # TO DO: add escape key to cancel query
-  results = get_search_results(query)
+  def select(self):
+    print('\nWhat would you like to do?')
+    print('--------------------------')
+    for (i, element) in enumerate(self.options, start=1):
+      label = options_dict[element]['label']
+      print(f'{i} - {label}')
+    print('\n')
+
+    selection = input('Please enter your selection:  ')
+
+    # to-do: display error message if invalid type is entered (not int)
+    if int(selection) not in range(1, len(self.options) + 1):
+      input('Please choose a number from the selections listed:  ')
+    
+    option = self.options[int(selection) - 1]
+    options_dict[option]['function']()
+
+class Header:
+  def __init__(self, name):
+    self.name = name.upper()
   
-  display_search_results(results)
+  def print(self):
+    margin = math.floor((35 - len(self.name)) / 2) * ' '
+    border = '=' * 35
+    print(f'\n\n{border}')
+    print(f'{margin}{self.name}{margin}')
+    print(f'{border}\n\n')
 
-def get_search_results(query):
-  """
-  Connect to the API using the requests library
-  and return up to five books matching search query.
-  """
-  # format query
-  # TO DO: implement format query fn to handle special chars, spaces, convert case
-  f_query = format_query(query)
+class Book:
+  def __init__(self, title, author, publisher):
+    self.title = title
+    self.author = author
+    self.publisher = publisher
+  
+  def print(self):
+    print(f'    Title: {self.title}')
+    print(f'    Author(s): {self.author}')
+    print(f'    Publisher: {self.publisher}\n')
 
-  # construct endpoint URL
-  api_prefix = 'https://www.googleapis.com/books/v1/volumes'
-  api_key = 'AIzaSyBRv9nNOtXCLqu36oPqB8OsWwy5MfaCcBs'
-  api_endpoint = f'{api_prefix}?q={f_query}&key={api_key}&maxResults=5'
+# UTILITIES 
+def display_books(list):
+  for (i, book) in enumerate(list, start=1):
+    print(f'ID {i}')
+    book.print()
 
-  # use requests lib to fetch data from endpoint
-  response = requests.get(api_endpoint)
+# SEARCH 
+def search():
+  header = Header('search')
+  header.print()
+
+  query = input('Search for books containing the query:  ').lower()
+  # TO DO: handle empty query 
+  # TO DO: add escape key to cancel query
+  results = fetch_by(query)
+
+  if results == False:
+    print('Sorry, your search returned 0 results.\n')
+    menu = Menu(['search', 'view', 'exit'])
+    menu.select()
+  else:
+    display_results()
+
+def fetch_by(query):
+  search_results.clear()
+  response = requests.get(f'https://www.googleapis.com/books/v1/volumes?q={query}&maxResults=5').json()
 
   # if request fails, return false
-  if response.status_code != 200:
+  if response['totalItems'] == 0:
     return False
   
-  # convert response obj to dictionary
-  response_dict = response.json()
+  # convert response obj to dictionary & format data
+  search_results.extend(format_search_results(response))
+  return search_results
 
-  # create new dictionary for relevant data 
-  result_list = []
+def format_search_results(data):
+  results = []
+  for item in data['items']:
+    if 'title' not in item['volumeInfo']:
+      title = ''
+    else:
+      title = item['volumeInfo']['title']
+    if 'authors' not in item['volumeInfo']:
+      author = ''
+    else:
+      author = ', '.join(item['volumeInfo']['authors'])
+    if 'publisher' not in item['volumeInfo']:
+      publisher = ''
+    else: 
+      publisher = item['volumeInfo']['publisher']
+    result = Book(title, author, publisher)
+    results.append(result)
+  return results
 
-  # extract from response
-  results = response_dict['items']
-  for record in results:
-    book = record['volumeInfo']
-    newBook = format_book(book)
-    result_list.append(newBook)
-  
-  return(result_list)
+def display_results():
+  print('\nMatching Results:')
+  print('------------------\n')
+  display_books(search_results)
 
-def display_search_results(books):
-  """
-  Print entries for up to five matching books.
-  Display menu with available actions.
-  """
-  # TO-DO include error handling if no matches found
-  if len(books) == 0:
-    print('Sorry, your search returned 0 books.')
-  else:
-    print('\nMatching Results:')
-    print('------------------\n')
-    display_books_in_list(books)
+  menu = Menu(['save', 'new', 'view', 'exit'])
+  menu.select()
 
-  options = ['Save a book to my reading list', 'Start a new search', 'Exit to home']
-  selection = select_from_menu(options)
-
-  if selection == '1':
-    id = input('Enter ID for book you would like to save:  ')
-    # TO DO: add escape key to cancel save
-    index = int(id) - 1
-    add_to_reading_list(books[index])
-    print(f'Saving: {books[index]}')
-
-    # TO DO: would you like to save another? 
-    # - yes: prompt user for book id
-    # - no: select new search or go home
-
-  elif selection == '2':
-    search()
-  elif selection == '3':
-    main()
-
-### READING LIST ###
-def add_to_reading_list(book):
-  """
-  Adds selected record to reading list.
-  """
+def save():
+  num = int(input('Enter the ID of the book to save:  '))
+  selection = json.dumps(search_results[num - 1].__dict__, indent = 4)
   # TO DO: add validation to prevent duplicate records?
 
+  write_to_saved(selection)
+  print(f'Saved: {selection}')
+
+  menu = Menu(['another', 'new', 'view', 'exit'])
+  menu.select()
+
+def write_to_saved(book):
   with open('reading_list.json','r+') as file:
-    # load existing data into a dict
     file_data = json.load(file)
-    # join book with file_data inside reading_list 
     file_data["reading_list"].append(book)
-    # sets file's current position at offset
     file.seek(0)
-    # convert back to json.
     json.dump(file_data, file, indent = 4)
 
-def display_reading_list():
-  """
-  Print records of books saved to reading list.
-  """
-  # open JSON reading list file
-  f = open('reading_list.json')
+# READING LIST 
+def view_saved():
+  header = Header('reading list')
+  header.print()
 
-  # return JSON object as a dictionary
-  data = json.load(f)
+  reading_list = load_saved()
 
-  reading_list = data['reading_list']
-
-  # include handling for empty list
+  #include handling for empty list
   if len(reading_list) == 0:
     print('There are no books in your reading list.')
   else:
-    print('\n ---------------- ')
-    print('|  READING LIST  |')
-    print(' ---------------- \n')
-    display_books_in_list(reading_list)
+    # saved_books = format_saved_books(reading_list)
+    display_books(reading_list)
 
-### QUIT ###
+  menu = Menu(['search', 'exit'])
+  menu.select()
+
+def load_saved():
+  # open JSON file & extract list
+  f = open('reading_list.json')
+  data = json.load(f)
+  list = data['reading_list']
+
+  # format JSON strings as list of Book instances
+  books = []
+  for record in list:
+    book = json.loads(record)
+    books.append(Book(book['title'], book['author'], book['publisher']))
+  return books
+
+# QUIT 
 def quit():
-  """
-  Search for books by user inputted query
-  """
-  print('\n ----------------- ')
-  print('|    GOOD-BYE!    |')
-  print(' ----------------- \n')
-  print("Thanks for using Books on 8th!\n")
+  quit_header = Header('quit')
+  quit_header.print()
+  print("Thanks for using Books on 8th! Goodbye.")
 
-### UTILITIES ###
-def select_from_menu(options_list): 
-  """
-  Reusable component to populate & print menu with available selections.
-  Validates user inputted selection is permitted.
-  """
-  print('----------------------------')
-  for (i, element) in enumerate(options_list, start=1):
-    print(f'{i} - {element}')
-
-  selection = input('\nPlease enter your selection:  ')
-  
-  # to-do: display error message if invalid type is entered (not int)
-  # display error message if invalid selection is made
-  if int(selection) not in range(1, len(options_list) + 1):
-    input('Please choose a number from the selections listed:  ')
-  else:
-    return selection
-
-def format_book(book):
-  multiple_authors = isinstance(book['authors'], list)
-  if multiple_authors:
-    author = ', '.join(book['authors'])
-  else:
-    author = book['authors']
-  return {
-      'title': book['title'],
-      'author': author,
-      'publisher': book['publisher']
-    }
-
-def format_query(query):
-  # TO DO: use regex to remove special chars from query, make lowercase
-  # TO DO: convert spaces to '+'s
-  return query
-
-def display_books_in_list(books):
-  for (i, book) in enumerate(books, start=1):
-    title = book['title']
-    author = book['author']
-    publisher = book['publisher']
-    print(f'ID {i}')
-    print(f'    Title: {title}')
-    print(f'    Author(s): {author}')
-    print(f'    Publisher: {publisher}\n')
-
-### RUN PROGRAM ###
+# MAIN
 def main():
-  """
-  Set up the main program.
-  """
+  header = Header('main')
+  header.print()
 
-  print('\n ---------------- ')
-  print('|  B00KS ON 8TH  |')
-  print(' ---------------- ')
-  print('\nWelcome to Books on 8th!\n\nWhat would you like to do?')
+  print('\n     Welcome to Books on 8th!')
+  print('     ~~~~~~~~~~~~~~~~~~~~~~~~\n')
 
-  options = ['Search for books', 'View my reading list', 'Quit']
-  selection = select_from_menu(options)
-  
-  if selection == "1": 
-    search()
-  elif selection == "2": 
-    display_reading_list()
-  elif selection == "3": 
-    quit()
+  menu = Menu(['search', 'view', 'quit'])
+  menu.select()
+
+search_results = []
+options_dict = {
+  'search': {
+    'label': 'Search for books',
+    'function': search
+  }, 
+  'new': {
+    'label': 'Start a new search',
+    'function': search
+  }, 
+  'save': {
+    'label': 'Save a book to my reading list',
+    'function': save
+  },
+  'another': {
+    'label': 'Save another book to my reading list',
+    'function': save
+  },
+  'view': {
+    'label': 'View my reading list',
+    'function': view_saved
+  }, 
+  'exit': {
+    'label': 'Exit to home',
+    'function': main
+  },
+  'quit': {
+    'label': 'Quit',
+    'function': quit
+  }
+}
 
 if __name__ == '__main__': main()
 

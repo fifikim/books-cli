@@ -1,49 +1,11 @@
 {
     "reading_list": [
-        {
-            "title": "onebook",
-            "author": "oneauthor",
-            "publisher": "onepublisher"
-        },
-        {
-            "title": "twobook",
-            "author": "twoauthor",
-            "publisher": "twopublisher"
-        },
-        {
-            "title": "threebook",
-            "author": "threeauthor",
-            "publisher": "threepublisher"
-        },
-        {
-            "title": "fourbook",
-            "author": "fourauthor",
-            "publisher": "fourpublisher"
-        },
-        {
-            "title": "Scientia Magna, Vol. 3, No. 1, 2007.",
-            "author": "Zhang Wenpeng, Hailong Li",
-            "publisher": "Infinite Study"
-        },
-        {
-            "title": "Your Total Solution for Math, Grade 1",
-            "author": "Brighter Child, Carson-Dellosa Publishing",
-            "publisher": "Carson-Dellosa Publishing"
-        },
-        {
-            "title": "The Animal Book",
-            "author": "David Burnie",
-            "publisher": "Penguin"
-        },
-        {
-            "title": "\u0641\u0648\u0627\u062a \u0627\u0644\u0648\u0641\u064a\u0627\u062a \u0648 \u0627\u0644\u0630\u064a\u0644 \u0639\u0644\u064a\u0647\u0627 - 4",
-            "author": "IslamKotob",
-            "publisher": "IslamKotob"
-        },
-        {
-            "title": "Dogs, Dogs, Dogs!",
-            "author": "Lesl\u00e9a Newman",
-            "publisher": "Simon & Schuster Books for Young Readers"
-        }
+        "{\n    \"title\": \"Scientia Magna, Vol. 3, No. 1, 2007.\",\n    \"author\": \"Zhang Wenpeng, Hailong Li\",\n    \"publisher\": \"Infinite Study\"\n}",
+        "{\n    \"title\": \"Your Total Solution for Math, Grade 1\",\n    \"author\": \"Brighter Child, Carson-Dellosa Publishing\",\n    \"publisher\": \"Carson-Dellosa Publishing\"\n}",
+        "{\n    \"title\": \"Experiments in Personality: Volume 1 (Psychology Revivals)\",\n    \"author\": \"H.J. Eysenck\",\n    \"publisher\": \"Routledge\"\n}",
+        "{\n    \"title\": \"Scientia Magna, Vol. 3, No. 1, 2007.\",\n    \"author\": \"Zhang Wenpeng, Hailong Li\",\n    \"publisher\": \"Infinite Study\"\n}",
+        "{\n    \"title\": \"Outcast By Kirkman & Azaceta Vol. 1\",\n    \"author\": \"Robert Kirkman\",\n    \"publisher\": \"Image Comics\"\n}",
+        "{\n    \"title\": \"Scientia Magna, Vol. 3, No. 1, 2007.\",\n    \"author\": \"Zhang Wenpeng, Hailong Li\",\n    \"publisher\": \"Infinite Study\"\n}",
+        "{\n    \"title\": \"Ubik\",\n    \"author\": \"Philip K. Dick\",\n    \"publisher\": \"Orion Publishing Group\"\n}"
     ]
 }
