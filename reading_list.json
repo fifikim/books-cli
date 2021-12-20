@@ -1,24 +1,10 @@
 {
     "reading_list": [
-        {
-            "title": "Hamlet",
-            "author": "William Shakespeare",
-            "publisher": "Yale University Press"
-        },
-        {
-            "title": "Experiments in Personality: Volume 1 (Psychology Revivals)",
-            "author": "H.J. Eysenck",
-            "publisher": "H.J. Eysenck"
-        },
-        {
-            "title": "Scientia Magna, Vol. 3, No. 1, 2007.",
-            "author": "Zhang Wenpeng, Hailong Li",
-            "publisher": "Zhang Wenpeng, Hailong Li"
-        },
-        {
-            "title": "Experiments in Personality: Volume 1 (Psychology Revivals)",
-            "author": "H.J. Eysenck",
-            "publisher": "H.J. Eysenck"
-        }
+        "{\n    \"title\": \"Scientia Magna, Vol. 3, No. 1, 2007.\",\n    \"author\": \"Zhang Wenpeng, Hailong Li\",\n    \"publisher\": \"Infinite Study\"\n}",
+        "{\n    \"title\": \"Your Total Solution for Math, Grade 1\",\n    \"author\": \"Brighter Child, Carson-Dellosa Publishing\",\n    \"publisher\": \"Carson-Dellosa Publishing\"\n}",
+        "{\n    \"title\": \"Experiments in Personality: Volume 1 (Psychology Revivals)\",\n    \"author\": \"H.J. Eysenck\",\n    \"publisher\": \"Routledge\"\n}",
+        "{\n    \"title\": \"Scientia Magna, Vol. 3, No. 1, 2007.\",\n    \"author\": \"Zhang Wenpeng, Hailong Li\",\n    \"publisher\": \"Infinite Study\"\n}",
+        "{\n    \"title\": \"Outcast By Kirkman & Azaceta Vol. 1\",\n    \"author\": \"Robert Kirkman\",\n    \"publisher\": \"Image Comics\"\n}",
+        "{\n    \"title\": \"Scientia Magna, Vol. 3, No. 1, 2007.\",\n    \"author\": \"Zhang Wenpeng, Hailong Li\",\n    \"publisher\": \"Infinite Study\"\n}"
     ]
 }

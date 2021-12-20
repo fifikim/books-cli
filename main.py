@@ -7,7 +7,7 @@ class Menu:
   def __init__(self, options):
     self.options = options
 
-  def print(self):
+  def select(self):
     print('\nWhat would you like to do?')
     print('--------------------------')
     for (i, element) in enumerate(self.options, start=1):
@@ -32,9 +32,9 @@ class Header:
     margin = math.floor((35 - len(self.name)) / 2) * ' '
     border = '=' * 35
 
-    print(f'\n{border}')
+    print(f'\n\n{border}')
     print(f'{margin}{self.name}{margin}')
-    print(f'{border}\n')
+    print(f'{border}\n\n')
 
 class Book:
   def __init__(self, title, author, publisher):
@@ -47,15 +47,8 @@ class Book:
     print(f'    Author(s): {self.author}')
     print(f'    Publisher: {self.publisher}\n')
 
-  def json(self):
-    return {
-      "title": f"{self.title}",
-      "author": f"{self.author}",
-      "publisher": f"{self.author}"
-    }
-
 # UTILITIES 
-def format_books(data):
+def format_search_results(data):
   books = []
   for item in data['items']:
     if 'title' not in item['volumeInfo']:
@@ -79,20 +72,27 @@ def display_books(list):
     print(f'ID {i}')
     book.print()
 
+def json_list_to_books(data):
+  books = []
+  for record in data:
+    book = json.loads(record)
+    books.append(Book(book['title'], book['author'], book['publisher']))
+  return books
+
 # SEARCH 
 def search():
   header = Header('search')
   header.print()
 
   query = input('Search for books containing the query:  ').lower()
-
+  # TO DO: handle empty query 
   # TO DO: add escape key to cancel query
   results = get_search_results(query)
 
   if results == False:
     print('Sorry, your search returned 0 results.')
     menu = Menu(['search', 'view', 'exit'])
-    menu.print()
+    menu.select()
   else:
     display_search_results()
 
@@ -105,7 +105,7 @@ def get_search_results(query):
     return False
   
   # convert response obj to dictionary & format data
-  search_results.extend(format_books(response))
+  search_results.extend(format_search_results(response))
   return search_results
 
 def display_search_results():
@@ -114,11 +114,11 @@ def display_search_results():
   display_books(search_results)
 
   menu = Menu(['save', 'new', 'view', 'exit'])
-  menu.print()
+  menu.select()
 
 def save():
-  num = input('Enter the ID of the book to save:  ')
-  book = search_results[int(num) - 1].json()
+  num = int(input('Enter the ID of the book to save:  '))
+  book = json.dumps(search_results[num - 1].__dict__, indent = 4)
   # TO DO: add validation to prevent duplicate records?
   
   with open('reading_list.json','r+') as file:
@@ -130,37 +130,33 @@ def save():
   print(f'Saved: {book}')
 
   menu = Menu(['another', 'new', 'view', 'exit'])
-  menu.print()
+  menu.select()
 
 # READING LIST 
 def view_list():
-  # open JSON reading list file
-  f = open('reading_list.json')
+  header = Header('reading list')
+  header.print()
 
-  # return JSON object as dictionary & extract list
+  # open JSON file & extract list
+  f = open('reading_list.json')
   data = json.load(f)
   reading_list = data['reading_list']
 
-  # include handling for empty list
+  #include handling for empty list
   if len(reading_list) == 0:
     print('There are no books in your reading list.')
   else:
-    header = Header('reading list')
-    header.print()
-
-    formatted = []
-    for book in reading_list:
-      formatted.append(Book(book['title'], book['author'], book['publisher']))
-    display_books(formatted)
+    saved_books = json_list_to_books(reading_list)
+    display_books(saved_books)
 
   menu = Menu(['search', 'exit'])
-  menu.print()
+  menu.select()
 
 # QUIT 
 def quit():
   quit_header = Header('quit')
   quit_header.print()
-  print("Thanks for using Books on 8th!\n")
+  print("Thanks for using Books on 8th! Goodbye.")
 
 # MAIN
 def main():
@@ -171,7 +167,7 @@ def main():
   print('     ~~~~~~~~~~~~~~~~~~~~~~~~\n')
 
   menu = Menu(['search', 'view', 'quit'])
-  menu.print()
+  menu.select()
 
 search_results = []
 options_dict = {
@@ -204,7 +200,6 @@ options_dict = {
     'function': quit
   }
 }
-
 
 if __name__ == '__main__': main()
 

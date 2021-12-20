@@ -35,20 +35,19 @@ Before I got started, I spent half a day researching approaches to Python CLI's.
 - Blockers:
   - 👻 What is Python? lol - feeling amnesia & constant urge to hit that semicolon key
   - ❓ Have never written a test in Python - need to research tomorrow
-  - ❓ Unsure how to handle queries including special characters & spaces
+  - ❓ Unsure how to handle queries including special characters 
 
 ### Day Two 
 - Goals:
   - Work on blockers from yesterday - testing, special characters
   - Improve UX: 
-    - app should only exit when user decides to quit 
+    - ✅ app should only exit when user decides to quit 
     - let user cancel a search or save
     - add identifier to books (not displayed) to prevent saving duplicate entries
-    - write help files?
   - Look into ways to reduce coupling: ORM/encapsulation
-  - Modularize components for reusability & SOC 
+  - ✅ Modularize components for reusability & SOC 
   - Break apart fns that aren't following SRP
-  - Create classes -- whoops!!!! Edit book & menu fns to use classes
+  - ✅ Create classes -- whoops!!!! Edit book & menu fns to use classes
 
 - Wins:
 
