@@ -94,9 +94,8 @@ class Book:
         print(f'    Publisher: {self.publisher}')
 
 # SHARED UTILITIES
-# validates that user-selected option is valid choice
 
-
+# validates user selection is menu option
 def validate_selection(val, list):
     max = len(list)
     if val:
@@ -109,17 +108,13 @@ def validate_selection(val, list):
         except ValueError:
             return False
 
-# formats & numbers books in a printed list
-
-
+# formats books in a numbered list
 def display_books(list):
     for (i, book) in enumerate(list, start=1):
         print(style_output(f'ID {i}', 'header'))
         book.print()
 
 # applies text decorations to terminal output
-
-
 def style_output(string, style):
     reset = '\033[0;0m'
     styles = {
@@ -132,9 +127,10 @@ def style_output(string, style):
     }
     return f"{styles[style]}{string}{reset}"
 
+
 # SEARCH FOR BOOKS
 
-
+# displays search header & prompts user for query
 def search():
     header = Header('search')
     header.print()
@@ -143,9 +139,7 @@ def search():
     fetched = fetch_by(q)
     display_results(fetched)
 
-# validates that search query is not blank
-
-
+# validates search query, repeats prompt if query is blank
 def validate_query():
     query = input('Search for books containing the query:  ')
     if query:
@@ -155,8 +149,6 @@ def validate_query():
         validate_query()
 
 # submits api get request & returns relevant data from response
-
-
 def fetch_by(query):
     response = requests.get(
         f'https://www.googleapis.com/books/v1/volumes?q={query}&maxResults=5').json()
@@ -166,8 +158,6 @@ def fetch_by(query):
     return search_results
 
 # formats response data & saves as Book instance
-
-
 def format_search_results(data):
     results = []
     for item in data['items']:
@@ -188,8 +178,6 @@ def format_search_results(data):
     return results
 
 # prints formatted search results & new menu selections
-
-
 def display_results(results):
     if results == False:
         print(style_output('Sorry, your search returned 0 results.', 'warning'))
@@ -202,8 +190,6 @@ def display_results(results):
         menu.print()
 
 # saves selected book to reading list
-
-
 def save(search_results):
     selection = input('Please enter the ID of the book to save:   ')
     valid = validate_selection(selection, search_results)
@@ -220,8 +206,6 @@ def save(search_results):
         save()
 
 # appends book data to reading_list.json file
-
-
 def write_to_saved(book):
     with open('reading_list.json', 'r+') as file:
         file_data = json.load(file)
@@ -229,35 +213,29 @@ def write_to_saved(book):
         file.seek(0)
         json.dump(file_data, file, indent=4)
 
+
 # VIEW READING LIST PAGE
 
-
+# displays reading list header & prints saved books
 def view_saved():
     header = Header('reading list')
     header.print()
     list = load_saved()
     reading_list = format_loaded(list)
-
     if len(reading_list) == 0:
         print(style_output('There are no books in your reading list.', 'warning'))
     else:
         display_books(reading_list)
-
     menu = Menu(['search', 'exit'])
     menu.print()
 
-# loads data from reading_list.json file & formats each entry as Book instance
-
-
+# loads data from reading_list.json file 
 def load_saved():
-    # open JSON file & extract list
     f = open('reading_list.json')
     data = json.load(f)
     return data['reading_list']
 
-# format JSON strings as list of Book instances
-
-
+# formats JSON strings as list of Book instances
 def format_loaded(list):
     books = []
     for record in list:
@@ -267,21 +245,20 @@ def format_loaded(list):
 
 # QUIT PAGE
 
-
+# displays quit header & goodbye message
 def quit():
     quit_header = Header('quit')
     quit_header.print()
     print(style_output('\nThanks for using Books on 8th! Goodbye.\n', 'success'))
 
+
 # HOME PAGE
 
-
+# displays home header & menu
 def main():
     header = Header('home')
     header.print()
-
     print(style_output('      Welcome to Books on 8th!', 'header'))
-
     menu = Menu(['search', 'view', 'quit'])
     menu.print()
 
