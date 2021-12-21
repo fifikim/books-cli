@@ -133,13 +133,13 @@ Before I got started, I spent half a day researching approaches to building Pyth
   - Keep looking for ways to DRY code, separate concerns, & decouple components
 
 - Wins:
+  - ✅ Refactored to remove all global variables (options_dict, search_results)
   - ✅ Validation handles invalid/blank input for menu selection & search queries
   - ✅ Learned how to color output to the terminal without installing additional libraries, using ANSI escape sequences (need to figure out how to test compatibility with other OS's)
   - ✅ Read O'Reilly chapter on Python testing and took an online course about unit tests. Time consuming, but understood how to create my test file afterwards. 
 
 - Blockers:
-  - ❓ Realized that program won't run on Python 2, I think due to use of f-strings. Could convert all formatting to use string concatenation, but want to research building executable stand-alone apps to run on Mac/Unix & Windows.
-  - ❓ I know it's bad practice to use global variables but not sure how else I can pass search_results as a parameter to my save function since that function is being invoked by a method of the Menu class 
+  - ❓ Realized that program won't run on Python 2, I think due to use of f-strings. Could convert all formatting to use string concatenation, but want to research building executable stand-alone apps to run on Mac/Unix & Windows. 
 
 ## Author <a name = "author"></a>
 

@@ -177,32 +177,24 @@ def format_search_results(data):
 def display_results(results):
   if results == False:
     print(style_output('Sorry, your search returned 0 results.', 'warning'))
-
     menu = Menu(['new', 'view', 'exit'])
     menu.print()
-
   else: 
     print(style_output('\nResults matching your query:\n', 'underline'))
     display_books(results)
-
     menu = Menu(['save', 'new', 'view', 'exit'], results)
     menu.print()
 
 # saves selected book to reading list
 def save(search_results):
   selection = input('Please enter the ID of the book to save:   ')
-  
   valid = validate_selection(selection, search_results)
-
   if valid: 
     selected_book = json.dumps(search_results[int(selection) - 1].__dict__, indent = 4)
     write_to_saved(selected_book)
-
     print(style_output(f'Saved: {selected_book}', 'success'))
-
     menu = Menu(['another', 'new', 'view', 'exit'], search_results)
     menu.print()
-
   else:
     print(style_output(f'Invalid selection. Please choose from IDs #1-{len(search_results)}.\n', 'warning'))
     save()
@@ -219,10 +211,9 @@ def write_to_saved(book):
 def view_saved():
   header = Header('reading list')
   header.print()
+  list = load_saved()
+  reading_list = format_loaded(list)
 
-  reading_list = load_saved()
-
-  #include handling for empty list
   if len(reading_list) == 0:
     print(style_output('There are no books in your reading list.', 'warning'))
   else:
@@ -236,9 +227,10 @@ def load_saved():
   # open JSON file & extract list
   f = open('reading_list.json')
   data = json.load(f)
-  list = data['reading_list']
+  return data['reading_list']
 
-  # format JSON strings as list of Book instances
+# format JSON strings as list of Book instances
+def format_loaded(list):
   books = []
   for record in list:
     book = json.loads(record)
