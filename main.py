@@ -28,7 +28,7 @@ class Menu:
             },
             'view': {
                 'label': 'View my reading list',
-                'function': view_saved
+                'function': view_reading_list
             },
             'exit': {
                 'label': 'Exit to home',
@@ -92,6 +92,7 @@ class Book:
         print(f'    Title: {title}')
         print(f'    Author(s): {self.author}')
         print(f'    Publisher: {self.publisher}')
+
 
 # SHARED UTILITIES
 
@@ -217,7 +218,7 @@ def write_to_saved(book):
 # READING LIST VIEW
 
 # displays reading list header & prints saved books
-def view_saved():
+def view_reading_list():
     header = Header('reading list')
     header.print()
     list = load_saved()
@@ -242,6 +243,7 @@ def format_loaded(list):
         book = json.loads(record)
         books.append(Book(book['title'], book['author'], book['publisher']))
     return books
+
 
 # QUIT VIEW
 
