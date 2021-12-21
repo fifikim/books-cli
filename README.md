@@ -145,8 +145,8 @@ Before I got started, I spent half a day researching approaches to building Pyth
   - Finished README file w/ preview gif & instructions
 
 - Blockers:
-  - Spent a lot of time on the tic-tac-toe code review, and wasn't able to research testing mocks. Going to keep working on this after I submit, and hopefully will have the opportunity to submit more thorough tests with my revision.
-  - 🤞 Researched packaging and distributing Python projects & hopefully did it right!
+  - Spent a lot of today working on the tic-tac-toe code review, and wasn't able to do more research on testing mocks. Going to keep working on this after I submit, and hopefully will have the opportunity to submit more thorough tests with my revision.
+  - 🤞 Researched packaging and distributing Python projects but not sure if I'm doing it right so that other users are able to use the requests module.
 
 ## Future Implementation <a name = "future"></a>
 
