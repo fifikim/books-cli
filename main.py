@@ -204,7 +204,7 @@ def save(search_results):
     else:
         print(style_output(
             f'Invalid selection. Please choose from IDs #1-{len(search_results)}.\n', 'warning'))
-        save()
+        save(search_results)
 
 # appends book data to reading_list.json file
 def write_to_saved(book):
