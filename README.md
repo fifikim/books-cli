@@ -146,8 +146,10 @@ Before I got started, I spent half a day researching approaches to building Pyth
   - Finish README file w/ preview gif & installation instructions
 
 - Wins:
+  - 🤞 Researched packaging and distributing Python projects & hopefully did it right!
 
 - Blockers:
+  - Spent a lot of time on the tic-tac-toe code review, so wasn't able to get to testing mocks. Going to keep working on this after I submit, and hopefully will have the opportunity to submit more thorough tests with my revision.
 
 ## Future Implementation <a name = "future"></a>
 
@@ -165,13 +167,8 @@ mail@fifikim.com <br/>
 Books and online references:
 - Clean Python, Sunil Kapil, Apress
 - Python Cookbook, David Beazley & Brian K. Jones, O'Reilly
-- Unittest: 
-  https://docs.python.org/3/library/unittest.html
-- More on testing:
-  https://www.codecademy.com/courses/learn-intermediate-python-3/lessons/int-python-unit-testing/ (subscription required)
-- Coloring Output: 
-  https://stackabuse.com/how-to-print-colored-text-in-python/
-- Basic example of Python CLI fetching API data: 
-  https://python.plainenglish.io/writing-my-first-command-line-tool-part-1-of-2-71e30d68402c
-- Encoding/Decoding JSON <==> Custom Python Objects:
-  https://realpython.com/python-json/
+- <a href='https://docs.python.org/3/library/unittest.html'>Unittest</a>
+- <a href='https://www.codecademy.com/courses/learn-intermediate-python-3/lessons/int-python-unit-testing/'>More on Testing</a> (subscription required)
+- <a href='https://stackabuse.com/how-to-print-colored-text-in-python/'>Coloring terminal output</a>
+- <a href='https://realpython.com/python-json/'>Encoding/Decoding JSON <==> Custom Python Objects</a>
+- <a href='https://packaging.python.org/en/latest/tutorials/packaging-projects/'>Packaging Python projects</a>
