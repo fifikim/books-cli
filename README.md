@@ -21,6 +21,8 @@ Allows user to search for books and save selections to a reading list.
   - [Day One](#day-one)
   - [Day Two](#day-two)
   - [Day Three](#day-three)
+  - [Day Four](#day-four)
+- [Future Implementation](#future)
 - [Author](#author)
 - [Acknowledgments](#acknowledgments)
 
@@ -81,50 +83,46 @@ Add notes about how to use the system.
 
 ## Process <a name = "process"></a>
 
-I decided to build this app in my weaker language of the two that I practice so far. I've just graduated a bootcamp concentrating on JavaScript & JS frameworks, so I thought this would be a great opportunity to refresh my rusty Python skills and demonstrate my range as a developer.
+I decided to build this app in my weaker language of the two that I practice so far. I've just graduated a bootcamp concentrating on JavaScript & JS frameworks, so I thought this would be a great opportunity to refresh my novice/rusty Python skills and demonstrate my range as a developer.
 
-That meant that I had a lot of research to do! Since I'm self-taught in Python, this project required quite a few aspects that I'd never encountered in this language. 
+I had a lot of research to do! Since I'm self-taught in Python, this project required quite a few skills that I'd never attempted in this language (such as sending api calls & writing tests). 
 
-I wanted to avoid relying on using libraries, apart from built-in modules and those explicitly permitted in the instructions (to parse JSON & send API requests). 
+I wanted to avoid relying on libraries, apart from built-in modules and those explicitly permitted in the instructions (which stated we could use libraries to parse JSON & send API requests). 
 
 Before I got started, I spent half a day researching approaches to building Python CLI's. Many examples I found relied heavily on dependencies, until I found a blog about building a simple command line weather forecaster. I built <a href='github.com/fifikim/weather-cli'>this weather app</a> to get a sense of my process and then went to work on this Books CLI.
 
 ### Day One <a name = "day-one"></a>
 - Goals:
-  - Kanban board with user stories to guide feature implementation
+  - Create kanban board with user stories to guide feature implementation
   - Pseudocode a skeleton of the app & then write each function
 
 - Wins: 
-  - ✅ Created a working (buggy) version with decent UI. 
+  - ✅ Built a working (buggy) version of the full program with decent UI. 
   - ✅ Figured out how to save reading list to a local json file so that data persists after app exits.
-  - ✅ I got to code in Python again, yay!
 
 - Blockers:
-  - 👻 What is Python? lol - feeling amnesia & constant urge to hit that semicolon key
-  - ❓ Have never written a test in Python (only Mocha/Chai for JS) - need to research tomorrow
-  - ❓ Unsure how to handle queries including special characters 
+  - 👻 Python feeling very foreign & I'm fighting constant urge to hit the semicolon key.
+  - ❓ Have never written a test in Python (only Mocha/Chai for JS) - need to research tomorrow.
+  - ❓ Unsure how to handle invalid menu selections & queries.
 
 ### Day Two <a name = "day-two"></a>
 - Goals:
   - Work on blockers from yesterday - testing, special characters
-  - Improve UX: 
-    - app should only exit when user decides to quit 
-    - let user cancel a search or save
-    - add identifier to books (not displayed) to prevent saving duplicate entries
+  - Improve UX: app should only exit when user decides to quit 
   - Look into ways to reduce coupling: ORM/encapsulation
   - Modularize components for reusability & SOC 
   - Break apart fns that aren't following SRP
-  - Create classes -- whoops!!!! Edit book & menu fns to use classes 
+  - Create classes -- whoops!!!! Edit book & menu fns to use classes & class methods
 
 - Wins:
-  - ✅ Code feels much less redundant & cleaner after creating classes & methods.
+  - ✅ Code feels much less redundant after creating classes & methods.
   - ✅ Better user flow, fewer unexpected terminations/dead ends.
   - ✅ Took some effort but was able to convert reading list & search results back and forth from JSON format to a list of Book class instances.
 
 - Blockers:
-  - ⏳ Took a long time to switch from functional to OOP mindset. 
-  - ❓ Not sure how to let user cancel out of input prompt without exiting program.
-  - 😨 Wasn't able to start testing today -- more research needed.
+  - ⏳ Took a long time to switch from functional to OOP mindset. Not sure that I'm there yet.
+  - ❓ Unsure how to let user cancel out of input prompt without exiting program.
+  - 😨 Wasn't able to start testing today -- more research needed on this topic.
 
 ### Day Three <a name = "day-three"></a>
 - Goals:
@@ -133,13 +131,29 @@ Before I got started, I spent half a day researching approaches to building Pyth
   - Keep looking for ways to DRY code, separate concerns, & decouple components
 
 - Wins:
-  - ✅ Refactored to remove all global variables 
+  - ✅ Refactored code to remove all global variables 
   - ✅ Validation handles invalid/blank input for menu selection & search queries
-  - ✅ Learned how to color output to the terminal without installing additional libraries
-  - ✅ Read O'Reilly chapter on Python testing and took an online course about unit tests. Time consuming, but understood how to create my test file afterwards
+  - ✅ Learned how to color output to the terminal w/o using additional libraries. Happier with UI.
+  - ✅ Created tests to check fns that return 
 
 - Blockers:
+  - ❓ Not sure yet how to write tests that check terminal output - need to read up on unittest.mock
   - ❓ Realized that program won't run on Python 2, I think due to use of f-strings. Could convert all formatting to use string concatenation, but want to research building executable stand-alone apps to run on Mac/Unix & Windows. 
+
+### Day Four <a name = "day-four"></a>
+- Goals:
+  - Finish creating tests
+  - Figure out how to turn script into executable stand-alone app
+  - Finish README file w/ preview gif & installation instructions
+
+- Wins:
+
+- Blockers:
+
+## Future Implementation <a name = "future"></a>
+
+- let user cancel a search or save
+- add hidden id key to books to prevent saving duplicate entries in reading list
 
 ## Author <a name = "author"></a>
 
@@ -149,12 +163,12 @@ mail@fifikim.com <br/>
 
 ## Acknowledgements <a name = "acknowledgements"></a>
 
-Books and references consulted:
+Books and online references:
 - Clean Python, Sunil Kapil, Apress
 - Python Cookbook, David Beazley & Brian K. Jones, O'Reilly
 - Unittest: 
   https://docs.python.org/3/library/unittest.html
-- Testing:
+- More on testing:
   https://www.codecademy.com/courses/learn-intermediate-python-3/lessons/int-python-unit-testing/ (subscription required)
 - Coloring Output: 
   https://stackabuse.com/how-to-print-colored-text-in-python/

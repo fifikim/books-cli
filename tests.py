@@ -1,38 +1,60 @@
 import unittest
+import main
 
-# target = __import__('main.py')
+class UtilityTests(unittest.TestCase):
+  def test_validate_selection(self):
+    list = ['a', 'b', 'c', 'd']
+    self.assertTrue(main.validate_selection('1', list))
+    self.assertTrue(main.validate_selection('4', list))
+    self.assertFalse(main.validate_selection(' ', list))
+    self.assertFalse(main.validate_selection('dfdfd', list))
 
-class HomeTests(unittest.TestCase):
-
-  def testValue_sum(self):
-    self.assertEqual(sum([2, 4, 6]), 4, "Should be equal to 12")
-
-  def testValue_sum_tuple(self):
-    self.assertEqual(sum((1, 1, 1)), 6, "Should be equal to 6")
+  def test_style_output(self):
+    output = main.style_output('testing', 'success')
+    self.assertEqual(output, '\033[1;32mtesting\033[0;0m')
 
 class SearchTests(unittest.TestCase):
+  def test_fetch_by(self):
+    fetched = main.fetch_by('dog')
+    notFetched = main.fetch_by('dkfjdkfje9run3m4n3m43')
+    self.assertTrue(len(fetched) == 5)
+    self.assertFalse(notFetched)
 
-  def testValue_sum(self):
-    self.assertEqual(sum([2, 4, 6]), 12, "Should be equal to 12")
-
-  def testValue_sum_tuple(self):
-    self.assertEqual(sum((1, 1, 1)), 6, "Should be equal to 6")
+  def test_format_search_results(self):
+    data = {
+      "items": [
+        {
+        "volumeInfo": {
+        "title": "Flowers for Algernon",
+        "authors": [
+          "Daniel Keyes"
+        ],
+        "publisher": "Houghton Mifflin Harcourt"
+        }
+        }
+      ]
+    }
+    formatted = main.format_search_results(data)
+    self.assertTrue(type(formatted[0]) == main.Book)
 
 class ReadingListTests(unittest.TestCase):
+  def test_load_saved(self):
+    loaded = main.load_saved()
+    self.assertEqual(loaded[0], "{\n    \"title\": \"Kindred\",\n    \"author\": \"Octavia E. Butler\",\n    \"publisher\": \"Beacon Press\"\n}")
 
-  def testValue_sum(self):
-    self.assertEqual(sum([2, 4, 6]), 12, "Should be equal to 12")
+  def test_format_loaded(self):
+    loaded = main.load_saved()
+    formatted = main.format_loaded(loaded)
+    self.assertTrue(type(formatted[0]) == main.Book)
+    self.assertTrue(formatted[0].title == 'Kindred')
 
-  def testValue_sum_tuple(self):
-    self.assertEqual(sum((1, 1, 1)), 6, "Should be equal to 6")
+# class MenuTests(unittest.TestCase):
 
-class QuitTests(unittest.TestCase):
+# class SaveTests(unittest.TestCase):
 
-  def testValue_sum(self):
-    self.assertEqual(sum([2, 4, 6]), 12, "Should be equal to 12")
+# class QuitTests(unittest.TestCase):
 
-  def testValue_sum_tuple(self):
-    self.assertEqual(sum((1, 1, 1)), 6, "Should be equal to 6")
+# class OutputTests(unittest.TestCase):
 
 if __name__ == '__main__':
   unittest.main()

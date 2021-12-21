@@ -232,9 +232,9 @@ def view_reading_list():
 
 # loads data from reading_list.json file 
 def load_saved():
-    f = open('reading_list.json')
-    data = json.load(f)
-    return data['reading_list']
+    with open('reading_list.json') as f:
+      data = json.load(f)
+      return data['reading_list']
 
 # formats JSON strings as list of Book instances
 def format_loaded(list):
