@@ -4,13 +4,44 @@ import math
 
 # CLASSES
 class Menu:
-  def __init__(self, options, search_results = []):
+  def __init__(self, options, results = []):
     self.options = options
+    self.results = results
+    self.options_dict = {
+      'search': {
+        'label': 'Search for books',
+        'function': search
+      }, 
+      'new': {
+        'label': 'Start a new search',
+        'function': search
+      }, 
+      'save': {
+        'label': 'Save a book to my reading list',
+        'function': save
+      },
+      'another': {
+        'label': 'Save another book to my reading list',
+        'function': save
+      },
+      'view': {
+        'label': 'View my reading list',
+        'function': view_saved
+      }, 
+      'exit': {
+        'label': 'Exit to home',
+        'function': main
+      },
+      'quit': {
+        'label': 'Quit',
+        'function': quit
+      }
+    }
 
   def print(self):
     print(style_output('\n\nWhat would you like to do?', 'underline'))
     for (i, element) in enumerate(self.options, start=1):
-      label = options_dict[element]['label']
+      label = self.options_dict[element]['label']
       id = style_output(i, 'header')
       print(f'{id} - {label}')
     print('\n')
@@ -22,7 +53,10 @@ class Menu:
 
     if valid: 
       option = self.options[int(selection) - 1]
-      options_dict[option]['function']()
+      if option == 'save' or option == 'another':
+        save(self.results)
+      else:
+        self.options_dict[option]['function']()
     else:
       print(style_output(f'Invalid selection. Please choose from Options #1-{len(self.options)}.\n', 'warning'))
       self.select()
@@ -94,9 +128,9 @@ def search():
   # TO DO: add escape key to cancel query
 
   q = validate_query()
-  results = fetch_by(q)
+  fetched = fetch_by(q)
 
-  display_results(results)
+  display_results(fetched)
 
 # validates that search query is not blank
 def validate_query():
@@ -109,7 +143,6 @@ def validate_query():
 
 # submits api get request & returns relevant data from response
 def fetch_by(query):
-  search_results.clear()
   response = requests.get(f'https://www.googleapis.com/books/v1/volumes?q={query}&maxResults=5').json()
 
   # if request fails, return false
@@ -117,7 +150,7 @@ def fetch_by(query):
     return False
   
   # format data & save to local temp storage
-  search_results.extend(format_search_results(response))
+  search_results = (format_search_results(response))
   return search_results
 
 # formats response data & saves as Book instance
@@ -150,15 +183,13 @@ def display_results(results):
 
   else: 
     print(style_output('\nResults matching your query:\n', 'underline'))
-    display_books(search_results)
+    display_books(results)
 
-    menu = Menu(['save', 'new', 'view', 'exit'])
+    menu = Menu(['save', 'new', 'view', 'exit'], results)
     menu.print()
 
-  
-
 # saves selected book to reading list
-def save():
+def save(search_results):
   selection = input('Please enter the ID of the book to save:   ')
   
   valid = validate_selection(selection, search_results)
@@ -169,7 +200,7 @@ def save():
 
     print(style_output(f'Saved: {selected_book}', 'success'))
 
-    menu = Menu(['another', 'new', 'view', 'exit'])
+    menu = Menu(['another', 'new', 'view', 'exit'], search_results)
     menu.print()
 
   else:
@@ -229,39 +260,6 @@ def main():
 
   menu = Menu(['search', 'view', 'quit'])
   menu.print()
-
-# GLOBAL VARIABLES
-search_results = []
-options_dict = {
-  'search': {
-    'label': 'Search for books',
-    'function': search
-  }, 
-  'new': {
-    'label': 'Start a new search',
-    'function': search
-  }, 
-  'save': {
-    'label': 'Save a book to my reading list',
-    'function': save
-  },
-  'another': {
-    'label': 'Save another book to my reading list',
-    'function': save
-  },
-  'view': {
-    'label': 'View my reading list',
-    'function': view_saved
-  }, 
-  'exit': {
-    'label': 'Exit to home',
-    'function': main
-  },
-  'quit': {
-    'label': 'Quit',
-    'function': quit
-  }
-}
 
 if __name__ == '__main__': main()
 
