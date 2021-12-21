@@ -142,7 +142,7 @@ Before I got started, I spent half a day researching approaches to building Pyth
 
 ### Day Four <a name = "day-four"></a>
 - Goals:
-  - Finish creating tests
+  - Create tests that mock print() and input()
   - Figure out how to turn script into executable stand-alone app
   - Finish README file w/ preview gif & installation instructions
 
