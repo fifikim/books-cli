@@ -2,7 +2,7 @@
 
 <div>
 <p align="center"> A command line application utilizing Google Books API. <br> 
-Allows user to search for books and save selections to a reading list.
+Search for books and save selections to a reading list.
 </p>
 
 <p align="center">
@@ -28,57 +28,54 @@ Allows user to search for books and save selections to a reading list.
 
 ## Getting Started <a name = "getting_started"></a>
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. 
-
 ### Prerequisites 
 
-What things you need to install the software and how to install them.
-
-```
-Give examples
-```
+This app requires Python3.
 
 ### Installing 
 
-A step by step series of examples that tell you how to get a development env running.
-
-Say what the step will be
+Clone this repo from the terminal:
 
 ```
-Give the example
+git clone https://github.com/fifikim/books-cli.git
 ```
 
-And repeat
+Launch the program:
 
 ```
-until finished
+python3 main.py
 ```
-
-End with an example of getting some data out of the system or using it for a little demo.
 
 ## Testing <a name = "testing"></a>
 
-Explain how to run the automated tests for this system.
-
-### Break down into end to end tests
-
-Explain what these tests test and why
+Run tests:
 
 ```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
+python3 tests.py
 ```
 
 ## Usage <a name="usage"></a>
 
-Add notes about how to use the system.
+- Search for books and receive up to 5 matching results at a time. 
+- Save search results to your reading list to view later.
+
+### Navigation
+from Home page:
+  1. Search for books 
+  2. View your reading list 
+  3. Quit - exit application
+
+Search page:
+  View search results and:
+  1. Save selected books
+  2. Start a new search
+  3. View your reading list
+  4. Exit to home
+
+Reading List page:
+  View your saved books and:
+  1. Search
+  2. Exit to home
 
 ## Process <a name = "process"></a>
 
@@ -143,18 +140,18 @@ Before I got started, I spent half a day researching approaches to building Pyth
 - Goals:
   - Create tests that mock print() and input()
   - Figure out how to turn script into executable stand-alone app
-  - Finish README file w/ preview gif & installation instructions
 
 - Wins:
-  - 🤞 Researched packaging and distributing Python projects & hopefully did it right!
+  - Finished README file w/ preview gif & instructions
 
 - Blockers:
-  - Spent a lot of time on the tic-tac-toe code review, so wasn't able to get to testing mocks. Going to keep working on this after I submit, and hopefully will have the opportunity to submit more thorough tests with my revision.
+  - Spent a lot of time on the tic-tac-toe code review, and wasn't able to research testing mocks. Going to keep working on this after I submit, and hopefully will have the opportunity to submit more thorough tests with my revision.
+  - 🤞 Researched packaging and distributing Python projects & hopefully did it right!
 
 ## Future Implementation <a name = "future"></a>
 
-- let user cancel a search or save
-- add hidden id key to books to prevent saving duplicate entries in reading list
+- Add hidden id key to book entries, enabling program to prevent user from creating duplicate entries in reading list
+- Create additional tests to ensure print() and output() functions are working correctly
 
 ## Author <a name = "author"></a>
 
