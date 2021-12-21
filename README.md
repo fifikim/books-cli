@@ -85,7 +85,7 @@ I decided to build this app in my weaker language of the two that I practice so 
 
 That meant that I had a lot of research to do! Since I'm self-taught in Python, this project required quite a few aspects that I'd never encountered in this language. 
 
-I wanted to avoid relying on using libraries, apart from built-in tools and those explicitly permitted in the instructions (to parse JSON & send API requests). 
+I wanted to avoid relying on using libraries, apart from built-in modules and those explicitly permitted in the instructions (to parse JSON & send API requests). 
 
 Before I got started, I spent half a day researching approaches to building Python CLI's. Many examples I found relied heavily on dependencies, until I found a blog about building a simple command line weather forecaster. I built <a href='github.com/fifikim/weather-cli'>this weather app</a> to get a sense of my process and then went to work on this Books CLI.
 
@@ -139,7 +139,7 @@ Before I got started, I spent half a day researching approaches to building Pyth
 
 - Blockers:
   - ❓ Realized that program won't run on Python 2, I think due to use of f-strings. Could convert all formatting to use string concatenation, but want to research building executable stand-alone apps to run on Mac/Unix & Windows.
-
+  - ❓ I know it's bad practice to use global variables but not sure how else I can pass search_results as a parameter to my save function since that function is being invoked by a method of the Menu class 
 
 ## Author <a name = "author"></a>
 

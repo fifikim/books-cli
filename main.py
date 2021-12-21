@@ -4,14 +4,14 @@ import math
 
 # CLASSES
 class Menu:
-  def __init__(self, options):
+  def __init__(self, options, search_results = []):
     self.options = options
 
   def print(self):
     print(style_output('\n\nWhat would you like to do?', 'underline'))
     for (i, element) in enumerate(self.options, start=1):
       label = options_dict[element]['label']
-      id = style_output(i, 'option')
+      id = style_output(i, 'header')
       print(f'{id} - {label}')
     print('\n')
     self.select()
@@ -55,7 +55,7 @@ class Book:
     print(f'    Publisher: {self.publisher}')
 
 # SHARED UTILITIES 
-# validates that user-selected option is valid menu choice
+# validates that user-selected option is valid choice
 def validate_selection(val, list):
   max = len(list)
   if val:
@@ -71,7 +71,7 @@ def validate_selection(val, list):
 # formats & numbers books in a printed list
 def display_books(list):
   for (i, book) in enumerate(list, start=1):
-    print(style_output(f'ID {i}', 'success'))
+    print(style_output(f'ID {i}', 'header'))
     book.print()
 
 # applies text decorations to terminal output
@@ -79,10 +79,9 @@ def style_output(string, style):
   reset = '\033[0;0m'
   styles = {
     'header': '\033[1;36m',
-    'underline': '\033[4;37m',
+    'underline': '\033[4;33m',
     'border': '\033[0;35m',
     'title': '\033[3;36m',
-    'option': '\033[0;33m',
     'success': '\033[1;32m',
     'warning': '\033[1;31m',
   }
@@ -145,16 +144,23 @@ def format_search_results(data):
 def display_results(results):
   if results == False:
     print(style_output('Sorry, your search returned 0 results.', 'warning'))
+
+    menu = Menu(['new', 'view', 'exit'])
+    menu.print()
+
   else: 
     print(style_output('\nResults matching your query:\n', 'underline'))
     display_books(search_results)
 
-  menu = Menu(['save', 'new', 'view', 'exit'])
-  menu.print()
+    menu = Menu(['save', 'new', 'view', 'exit'])
+    menu.print()
+
+  
 
 # saves selected book to reading list
 def save():
   selection = input('Please enter the ID of the book to save:   ')
+  
   valid = validate_selection(selection, search_results)
 
   if valid: 
