@@ -4,7 +4,7 @@ import math
 
 # CLASSES
 
-
+# prints menu with options for current view & executes user-selected action
 class Menu:
     def __init__(self, options, results=[]):
         self.options = options
@@ -64,7 +64,7 @@ class Menu:
                 f'Invalid selection. Please choose from Options #1-{len(self.options)}.\n', 'warning'))
             self.select()
 
-
+# prints header for current view
 class Header:
     def __init__(self, name):
         self.name = name.upper()
@@ -80,7 +80,7 @@ class Header:
         print(f" {style_output(border2, 'border')}")
         print(f'   {border}\n\n')
 
-
+# stores book data as object & prints formatted details
 class Book:
     def __init__(self, title, author, publisher):
         self.title = title
@@ -95,7 +95,7 @@ class Book:
 
 # SHARED UTILITIES
 
-# validates user selection is menu option
+# validates user selection is available menu option
 def validate_selection(val, list):
     max = len(list)
     if val:
@@ -114,7 +114,7 @@ def display_books(list):
         print(style_output(f'ID {i}', 'header'))
         book.print()
 
-# applies text decorations to terminal output
+# applies text styling to terminal output
 def style_output(string, style):
     reset = '\033[0;0m'
     styles = {
@@ -128,7 +128,7 @@ def style_output(string, style):
     return f"{styles[style]}{string}{reset}"
 
 
-# SEARCH FOR BOOKS
+# SEARCH VIEW
 
 # displays search header & prompts user for query
 def search():
@@ -214,7 +214,7 @@ def write_to_saved(book):
         json.dump(file_data, file, indent=4)
 
 
-# VIEW READING LIST PAGE
+# READING LIST VIEW
 
 # displays reading list header & prints saved books
 def view_saved():
@@ -243,7 +243,7 @@ def format_loaded(list):
         books.append(Book(book['title'], book['author'], book['publisher']))
     return books
 
-# QUIT PAGE
+# QUIT VIEW
 
 # displays quit header & goodbye message
 def quit():
@@ -252,9 +252,9 @@ def quit():
     print(style_output('\nThanks for using Books on 8th! Goodbye.\n', 'success'))
 
 
-# HOME PAGE
+# HOMEPAGE VIEW
 
-# displays home header & menu
+# displays homepage header & menu
 def main():
     header = Header('home')
     header.print()
