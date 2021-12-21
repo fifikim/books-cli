@@ -39,7 +39,7 @@ Clone this repo from the terminal:
 git clone https://github.com/fifikim/books-cli.git
 ```
 
-Install setup file & dependencies:
+cd to program directory & install setup file & dependencies:
 ```
 python3 setup.py install
 ```
