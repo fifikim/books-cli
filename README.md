@@ -35,15 +35,18 @@ This app requires Python3.
 ### Installing 
 
 Clone this repo from the terminal:
-
 ```
 git clone https://github.com/fifikim/books-cli.git
 ```
 
-Launch the program:
-
+Install setup file & dependencies:
 ```
-python3 main.py
+python3 setup.py install
+```
+
+Launch the program:
+```
+python3 books/main.py
 ```
 
 ## Testing <a name = "testing"></a>

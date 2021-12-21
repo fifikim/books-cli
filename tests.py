@@ -1,5 +1,5 @@
 import unittest
-import main
+import books.main as main
 
 class UtilityTests(unittest.TestCase):
   def test_validate_selection(self):
