@@ -7,7 +7,7 @@ Allows user to search for books and save selections to a reading list.
 
 <p align="center">
   <a href="" rel="noopener">
-  <img src="books_demo.gif" alt="Project preview"></a></br>
+  <img src="books3.gif" alt="Project preview"></a></br>
 </p>
 </div>
 
