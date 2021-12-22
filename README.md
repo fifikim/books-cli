@@ -41,7 +41,7 @@ git clone https://github.com/fifikim/books-cli.git
 
 cd to program directory & install setup file & dependencies:
 ```
-python3 setup.py install
+pipenv install --dev
 ```
 
 Launch the program:
