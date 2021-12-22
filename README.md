@@ -140,11 +140,11 @@ Before I got started, I spent half a day researching approaches to building Pyth
   - Figure out how to turn script into executable stand-alone app 
 
 - Wins:
-  - Finished README file w/ preview gif & instructions
-  - Figured out how to use pipenv to package dependencies with my github repo. Hopefully I did it right! 🤞
+  - ✅ Finished README file w/ preview gif & instructions
+  - ✅ Figured out how to use pipenv to package dependencies with my github repo. Hopefully I did it right! 🤞
 
 - Blockers:
-  - Spent a lot of today working on the tic-tac-toe code review, and wasn't able to do more research on testing mocks. Going to keep working on this after I submit, and hoping I have the opportunity to submit more thorough tests with my revision of this project.
+  - ⏳ Spent a lot of today working on the tic-tac-toe code review, and wasn't able to do more research on testing mocks. Hoping I have the opportunity to submit more thorough tests with my revision of this project.
 
 ## Future Implementation <a name = "future"></a>
 
