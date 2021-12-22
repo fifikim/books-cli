@@ -153,7 +153,7 @@ Before I got started, I spent half a day researching approaches to building Pyth
 
 ## Future Implementation <a name = "future"></a>
 
-- Add hidden id key to book entries, enabling program to prevent user from creating duplicate entries in reading list
+- Add hidden id key to book entries, enabling program to prevent user from creating duplicate entries in reading list.
 - Create additional tests to ensure print() and output() functions are working correctly
 
 ## Author <a name = "author"></a>
