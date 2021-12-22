@@ -42,14 +42,14 @@ pipenv install --dev
 
 Launch the program:
 ```
-python3 main.py
+pipenv run python main.py
 ```
 
 ## Testing <a name = "testing"></a>
 
 Run tests:
 ```
-python3 tests.py
+pipenv run python tests.py
 ```
 
 ## Usage <a name="usage"></a>
