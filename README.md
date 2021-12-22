@@ -46,7 +46,7 @@ python3 setup.py install
 
 Launch the program:
 ```
-python3 books/main.py
+python3 main.py
 ```
 
 ## Testing <a name = "testing"></a>
