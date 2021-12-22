@@ -28,10 +28,6 @@ Search for books and save selections to a reading list.
 
 ## Getting Started <a name = "getting_started"></a>
 
-### Prerequisites 
-
-This app requires that Python3 is already installed on your machine.
-
 ### Installing 
 
 Clone this repo from the terminal:
@@ -142,14 +138,14 @@ Before I got started, I spent half a day researching approaches to building Pyth
 ### Day Four <a name = "day-four"></a>
 - Goals:
   - Create tests that mock print() and input()
-  - Figure out how to turn script into executable stand-alone app
+  - Figure out how to turn script into executable stand-alone app 
 
 - Wins:
   - Finished README file w/ preview gif & instructions
+  - Figured out how to use pipenv to package dependencies with my github repo. Hopefully I did it right! 🤞
 
 - Blockers:
-  - Spent a lot of today working on the tic-tac-toe code review, and wasn't able to do more research on testing mocks. Going to keep working on this after I submit, and hopefully will have the opportunity to submit more thorough tests with my revision.
-  - 🤞 Researched packaging and distributing Python projects but not sure if I'm doing it right so that other users are able to use the requests module.
+  - Spent a lot of today working on the tic-tac-toe code review, and wasn't able to do more research on testing mocks. Going to keep working on this after I submit, and hoping I have the opportunity to submit more thorough tests with my revision of this project.
 
 ## Future Implementation <a name = "future"></a>
 
@@ -170,5 +166,5 @@ Books and online references:
 - <a href='https://docs.python.org/3/library/unittest.html'>Unittest</a>
 - <a href='https://www.codecademy.com/courses/learn-intermediate-python-3/lessons/int-python-unit-testing/'>More on Testing</a> (subscription required)
 - <a href='https://stackabuse.com/how-to-print-colored-text-in-python/'>Coloring terminal output</a>
-- <a href='https://realpython.com/python-json/'>Encoding/Decoding JSON <==> Custom Python Objects</a>
-- <a href='https://packaging.python.org/en/latest/tutorials/packaging-projects/'>Packaging Python projects</a>
+- <a href='https://realpython.com/python-json/'>Encoding/decoding JSON to/from custom Python objects</a>
+- <a href='https://realpython.com/pipenv-guide/'>Packaging Python projects with pipenv</a>
