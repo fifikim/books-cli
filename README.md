@@ -30,7 +30,7 @@ Search for books and save selections to a reading list.
 
 ### Prerequisites 
 
-This app requires Python3.
+This app requires that Python3 is already installed on your machine.
 
 ### Installing 
 
