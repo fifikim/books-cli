@@ -35,7 +35,7 @@ Clone this repo from the terminal:
 git clone https://github.com/fifikim/books-cli.git
 ```
 
-cd to program directory & install setup file & dependencies:
+cd to program directory & install dependencies:
 ```
 pipenv install --dev
 ```
@@ -48,7 +48,6 @@ python3 main.py
 ## Testing <a name = "testing"></a>
 
 Run tests:
-
 ```
 python3 tests.py
 ```
