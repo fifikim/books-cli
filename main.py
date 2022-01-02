@@ -118,6 +118,13 @@ class File:
                 books.append(Book(book['id'], book['title'], book['author'], book['publisher']))
             return books
 
+    def check_for_dupe(self, id):
+        books = self.load()
+        for book in books:
+            if book.id == id:
+                return True
+        return False
+
     def save(self, book):
         '''Append book data to reading list JSON file.
         
@@ -126,12 +133,16 @@ class File:
         '''
         json_book = json.dumps(book.__dict__, indent=4)
 
-        with open(self.filename, 'r+') as file:
-            file_data = json.load(file)
-            file_data['reading_list'].append(json_book)
-            file.seek(0)
-            json.dump(file_data, file, indent=4)
-        print(style_output(f'\nSaved: {repr(book)}', 'success'))
+        duplicate = self.check_for_dupe(book.id)
+        if duplicate:
+            print(style_output(f'"{book.title}" is already saved to this list.', 'warning'))
+        else:
+            with open(self.filename, 'r+') as file:
+                file_data = json.load(file)
+                file_data['reading_list'].append(json_book)
+                file.seek(0)
+                json.dump(file_data, file, indent=4)
+            print(style_output(f'\nSaved: {repr(book)}', 'success'))
 
     def create(self):
         '''Create new JSON file to store new reading list'''
