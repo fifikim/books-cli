@@ -4,6 +4,23 @@ import math
 
 # CLASSES
 
+class Header:
+    '''This class generates decorative page headers.'''
+    def __init__(self, name):
+        self.name = name.upper()
+
+    def print(self):
+        '''Print page header for current view.'''
+        margin = math.floor((35 - len(self.name)) / 2) * ' '
+        border = '=' * 30
+        border2 = '=' * 34
+        heading = style_output(self.name, 'header')
+        print(f'\n\n   {border}')
+        print(f" {style_output(border2, 'border')}")
+        print(f'={margin}{heading}{margin}=')
+        print(f" {style_output(border2, 'border')}")
+        print(f'   {border}\n\n')
+        
 class Menu:
     '''This class generates page menus and executes user selections of menu options.'''
     def __init__(self, options, results=[]):
@@ -66,23 +83,6 @@ class Menu:
                 f'Invalid selection. Please choose from Options #1-{len(self.options)}.\n', 'warning'))
             self.select()
 
-class Header:
-    '''This class generates decorative page headers.'''
-    def __init__(self, name):
-        self.name = name.upper()
-
-    def print(self):
-        '''Print page header for current view.'''
-        margin = math.floor((35 - len(self.name)) / 2) * ' '
-        border = '=' * 30
-        border2 = '=' * 34
-        heading = style_output(self.name, 'header')
-        print(f'\n\n   {border}')
-        print(f" {style_output(border2, 'border')}")
-        print(f'={margin}{heading}{margin}=')
-        print(f" {style_output(border2, 'border')}")
-        print(f'   {border}\n\n')
-
 class Book:
     '''This class handles book items.'''
     def __init__(self, title, author, publisher):
@@ -97,14 +97,39 @@ class Book:
         print(f'    Author(s): {self.author}')
         print(f'    Publisher: {self.publisher}')
 
-    def write_to_saved(self):
-        '''saves selected book to reading list'''
-        pass
-
-class List:
-    '''This class handles lists of books.'''
+class File:  
+    '''This class handles JSON files.'''
     def __init__(self, name):
         self.name = name
+        self.filename = f'{name}.json'    
+
+    def load(self):
+        '''Load reading list & format JSON strings as a list of Book instances.'''
+        with open(self.filename) as file:
+            data = json.load(file)
+            list = data['reading_list']
+
+            books = []
+            for record in list:
+                book = json.loads(record)
+                books.append(Book(book['title'], book['author'], book['publisher']))
+            return books
+
+    def save(self, book):
+        '''Append book data to reading_list.json file.
+        
+        :param book: Selected search result.
+        :type book: 
+        '''
+        with open(self.filename, 'r+') as file:
+            file_data = json.load(file)
+            file_data['reading_list'].append(book)
+            file.seek(0)
+            json.dump(file_data, file, indent=4)
+
+    def create_file(self):
+        pass
+
 
 # SHARED UTILITIES
 
@@ -164,13 +189,18 @@ def style_output(string, style):
     }
     return f"{styles[style]}{string}{reset}"
 
+def cancel():
+    pass
+
+def confirm():
+    pass
+
 
 # SEARCH VIEW
 
 def search():
     '''Display search header & prompts user for query.'''
-    header = Header('search')
-    header.print()
+    Header('search').print()
     # TO DO: add escape key to cancel query
     q = prompt_query()
     fetched = fetch_by(q)
@@ -200,8 +230,12 @@ def fetch_by(query):
     :return: List of Book class objects representing search results. 
     :rtype: list
     '''
+    # TO-DO: Wrap API calls in try/except blocks 
+    # if status code not in 200 range: print error message according to code
+    # return message in case of timeout
     response = requests.get(
         f'https://www.googleapis.com/books/v1/volumes?q={query}&maxResults=5').json()
+
     if response['totalItems'] == 0:
         return []
     else:
@@ -243,13 +277,11 @@ def display_results(results):
     '''
     if results == []:
         print(style_output('Sorry, your search returned 0 results.', 'warning'))
-        menu = Menu(['new', 'view', 'exit'])
-        menu.print()
+        Menu(['new', 'view', 'exit']).print()
     else:
         print(style_output('\nResults matching your query:\n', 'underline'))
         display_books(results)
-        menu = Menu(['save', 'new', 'view', 'exit'], results)
-        menu.print()
+        Menu(['save', 'new', 'view', 'exit'], results).print()
 
 def save(search_results):
     '''Save selected book to reading list.
@@ -262,63 +294,33 @@ def save(search_results):
     if valid:
         selected_book = json.dumps(
             search_results[int(selection) - 1].__dict__, indent=4)
-        write_to_saved(selected_book)
+        File('reading_list').save(selected_book)
         print(style_output(f'Saved: {selected_book}', 'success'))
-        menu = Menu(['another', 'new', 'view', 'exit'], search_results)
-        menu.print()
+        Menu(['another', 'new', 'view', 'exit'], search_results).print()
     else:
         print(style_output(
             f'Invalid selection. Please choose from IDs #1-{len(search_results)}.\n', 'warning'))
         save(search_results)
 
-def write_to_saved(book):
-    '''Append book data to reading_list.json file.
-        
-    :param book: Selected search result.
-    :type book: 
-    '''
-    with open('reading_list.json', 'r+') as file:
-        file_data = json.load(file)
-        file_data["reading_list"].append(book)
-        file.seek(0)
-        json.dump(file_data, file, indent=4)
 
 # READING LIST VIEW
 
 def view_reading_list():
     '''Display reading list header & print saved books.'''
-    header = Header('reading list')
-    header.print()
-    list = load_saved()
-    reading_list = format_loaded(list)
-    if len(reading_list) == 0:
+    Header('reading list').print()
+    list = File('reading_list').load()
+
+    if len(list) == 0:
         print(style_output('There are no books in your reading list.', 'warning'))
     else:
-        display_books(reading_list)
-    menu = Menu(['search', 'exit'])
-    menu.print()
-
-def load_saved():
-    '''Load data from reading_list.json file.'''
-    with open('reading_list.json') as f:
-      data = json.load(f)
-      return data['reading_list']
-
-def format_loaded(list):
-    '''Format JSON strings as a list of Book instances.'''
-    books = []
-    for record in list:
-        book = json.loads(record)
-        books.append(Book(book['title'], book['author'], book['publisher']))
-    return books
-
+        display_books(list)
+    Menu(['search', 'exit']).print()
 
 # QUIT VIEW
 
 def quit():
     '''Displays quit header & goodbye message.'''
-    quit_header = Header('quit')
-    quit_header.print()
+    Header('quit').print()
     print(style_output('\nThanks for using Books on 8th! Goodbye.\n', 'success'))
 
 
@@ -326,11 +328,9 @@ def quit():
 
 def main():
     '''Displays homepage header & menu.'''
-    header = Header('home')
-    header.print()
+    Header('home').print()
     print(style_output('      Welcome to Books on 8th!', 'header'))
-    menu = Menu(['search', 'view', 'quit'])
-    menu.print()
+    Menu(['search', 'view', 'quit']).print()
 
 
 if __name__ == '__main__':

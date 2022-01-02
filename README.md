@@ -165,8 +165,9 @@ The following are my responses to the questions posed by my reviewer, as well my
   - Start refactoring suggested edits and pseudocoding new features
 
 - Wins: 
-  - ✅ 
-  - ✅ 
+  - ✅ Defined goals and tasks for revision process
+  - ✅ Created new classes & methods to further modularize and streamline code
+  - ✅ Converted existing comments to docstrings -- noticed that declaring the types of inputs and returns is definitely helping me to refactor existing code & plan out how I can implement new features
 
 - Blockers:
   - ❓ 
