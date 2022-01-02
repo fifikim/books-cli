@@ -2,6 +2,7 @@ import json
 import requests
 import math
 
+
 # CLASSES
 
 class Header:
@@ -116,7 +117,7 @@ class File:
             return books
 
     def save(self, book):
-        '''Append book data to reading_list.json file.
+        '''Append book data to reading list JSON file.
         
         :param book: Selected search result.
         :type book: 
@@ -127,9 +128,75 @@ class File:
             file.seek(0)
             json.dump(file_data, file, indent=4)
 
-    def create_file(self):
+    def create(self):
+        '''Create new JSON file to store new reading list'''
         pass
 
+class API_Call:
+    '''This class handles calls to the GoogleBooks API.'''
+    def __init__(self, query):
+        self.query = query
+
+    def fetch(self):
+        '''Submit API get request & return response.
+                
+        :param query: User-submitted search query.
+        :type query: str
+        :return: List of Book class objects representing search results. 
+        :rtype: list
+        '''
+        # TO-DO: Wrap API calls in try/except blocks 
+        # if status code not in 200 range: print error message according to code
+        # return message in case of timeout
+        response = requests.get(
+            f'https://www.googleapis.com/books/v1/volumes?q={self.query}&maxResults=5').json()
+
+        if response['totalItems'] == 0:
+            return []
+        else:
+            return self.format_search_results(response)
+    
+    def format_search_results(self, data):
+        '''Extract relevant information from API response data & save items as Book instances.
+                
+        :param data: User-submitted search query.
+        :type data: str
+        :return: List of Book objects representing search results. 
+        :rtype: list
+        '''
+        results = []
+        for item in data['items']:
+            if 'title' not in item['volumeInfo']:
+                title = ''
+            else:
+                title = item['volumeInfo']['title']
+            if 'authors' not in item['volumeInfo']:
+                author = ''
+            else:
+                author = ', '.join(item['volumeInfo']['authors'])
+            if 'publisher' not in item['volumeInfo']:
+                publisher = ''
+            else:
+                publisher = item['volumeInfo']['publisher']
+            result = Book(title, author, publisher)
+            results.append(result)
+        self.display_results(results)
+
+    def display_results(self, results):
+        '''Print formatted search results & new menu options.
+                    
+        :param results: List of Book objects representing search results.
+        :type results: list
+        :return: List of Book class instances representing search results. 
+        :rtype: list
+        '''
+        if results == []:
+            print(style_output('Sorry, your search returned 0 results.', 'warning'))
+            Menu(['new', 'view', 'exit']).print()
+        else:
+            print(style_output('\nResults matching your query:\n', 'underline'))
+            display_books(results)
+            Menu(['save', 'new', 'view', 'exit'], results).print()
 
 # SHARED UTILITIES
 
@@ -157,12 +224,10 @@ def validate_selection(val, list):
 def display_books(list):
     '''Print list of books as a numbered, formatted list.
         
-    :param val: 
-    :type val: 
-    :param list: 
-    :type list:
-    :return: 
-    :rtype: 
+    :param list: List of Book objects.
+    :type list: list
+    :return: Numbered, formatted list.
+    :rtype: str
     '''
     for (i, book) in enumerate(list, start=1):
         print(style_output(f'ID {i}', 'header'))
@@ -171,12 +236,12 @@ def display_books(list):
 def style_output(string, style):
     '''Apply text styling to terminal output.
         
-    :param val: 
-    :type val: 
-    :param list: 
-    :type list: 
-    :return: 
-    :rtype: 
+    :param string: The text to stylize.
+    :type string: str 
+    :param style: Style corresponding to key in 'styles' dictionary.
+    :type style: str 
+    :return: Text with colors and/or styles applied.
+    :rtype: str
     '''
     reset = '\033[0;0m'
     styles = {
@@ -199,89 +264,26 @@ def confirm():
 # SEARCH VIEW
 
 def search():
-    '''Display search header & prompts user for query.'''
-    Header('search').print()
-    # TO DO: add escape key to cancel query
-    q = prompt_query()
-    fetched = fetch_by(q)
-    display_results(fetched)
-
-def prompt_query():
-    '''Prompt user to input search query.
-    
-    Repeat prompt if user tries to enter a blank query.
+    '''Display search header & prompts user for query.
+   
+    Prompt user to input search query. Repeat prompt if user tries to enter a blank query.
         
     :return: User-inputted query term(s).
     :rtype: str
     '''
-    query = input('Search for books containing the query:  ')
-    # TO-DO: refactor if/else to try/except so that this function has one return type
-    if query:
-        return query
-    else:
-        print(style_output('Please enter a valid query.\n', 'warning'))
-        prompt_query()
+    Header('search').print()
+    prompt()
 
-def fetch_by(query):
-    '''Submit API get request & return response.
-            
-    :param query: User-submitted search query.
-    :type query: str
-    :return: List of Book class objects representing search results. 
-    :rtype: list
-    '''
-    # TO-DO: Wrap API calls in try/except blocks 
-    # if status code not in 200 range: print error message according to code
-    # return message in case of timeout
-    response = requests.get(
-        f'https://www.googleapis.com/books/v1/volumes?q={query}&maxResults=5').json()
+def prompt():
+        query = input('Search for books containing the query:  ')
 
-    if response['totalItems'] == 0:
-        return []
-    else:
-        return format_search_results(response)
-
-def format_search_results(data):
-    '''Extract relevant information from API response data & save items as Book instances.
-               
-    :param data: User-submitted search query.
-    :type data: str
-    :return: List of Book objects representing search results. 
-    :rtype: list
-    '''
-    results = []
-    for item in data['items']:
-        if 'title' not in item['volumeInfo']:
-            title = ''
+        # TO DO: add escape key to cancel query
+        # TO-DO: refactor if/else to try/except so that this function has one return type
+        if query == '':
+            print(style_output('Please enter a valid query.\n', 'warning'))
+            prompt()
         else:
-            title = item['volumeInfo']['title']
-        if 'authors' not in item['volumeInfo']:
-            author = ''
-        else:
-            author = ', '.join(item['volumeInfo']['authors'])
-        if 'publisher' not in item['volumeInfo']:
-            publisher = ''
-        else:
-            publisher = item['volumeInfo']['publisher']
-        result = Book(title, author, publisher)
-        results.append(result)
-    return results
-
-def display_results(results):
-    '''Print formatted search results & new menu options.
-                   
-    :param results: List of Book objects representing search results.
-    :type results: list
-    :return: List of Book class instances representing search results. 
-    :rtype: list
-    '''
-    if results == []:
-        print(style_output('Sorry, your search returned 0 results.', 'warning'))
-        Menu(['new', 'view', 'exit']).print()
-    else:
-        print(style_output('\nResults matching your query:\n', 'underline'))
-        display_books(results)
-        Menu(['save', 'new', 'view', 'exit'], results).print()
+           API_Call.fetch(query)
 
 def save(search_results):
     '''Save selected book to reading list.
@@ -315,6 +317,7 @@ def view_reading_list():
     else:
         display_books(list)
     Menu(['search', 'exit']).print()
+
 
 # QUIT VIEW
 
