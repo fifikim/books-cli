@@ -20,6 +20,7 @@ Search for books and save selections to a reading list.
 - [Usage](#usage)
 - [Process: Revisions](#revision)
   - [Day One](#revision-day-one)
+  - [Day Two](#revision-day-two)
 - [Process: Inital Submission](#initial-sub)
   - [Day One](#day-one)
   - [Day Two](#day-two)
@@ -167,14 +168,29 @@ The following are my responses to the questions posed by my reviewer, as well my
 - Wins: 
   - ✅ Defined goals and tasks for revision process
   - ✅ Created new classes & methods to further modularize and streamline code
-  - ✅ Converted existing comments to docstrings -- noticed that declaring the types of inputs and returns is definitely helping me to refactor existing code & plan out how I can implement new features
+  - ✅ Implemented error handling for API calls (non 200-range status codes, timeouts, connection errors)
+  - ✅ Converted existing comments to docstrings -- noticed that declaring the types of inputs and returns is definitely making it easier to refactor existing code
+
+- Blockers:
+  - ❓ Need to do research tomorrow about best practices for creating classes. I'm uncertain whether or not I'm going too far in my refactoring functions as class methods.
+  - ⏳ Off to a slow start today due to the holiday.
+<br><br>
+
+### Revision - Day Two <a name = "revision - day-two"></a>
+- Goals:
+  - Tests
+  - Begin implementing additional features
+
+- Wins: 
+  - ✅
+  - ✅ 
+  - ✅ 
 
 - Blockers:
   - ❓ 
   - ❓ 
 
 <br><br>
-
 
 ## Process: Initial Submission (First Round) <a name = "intial-sub"></a>
 

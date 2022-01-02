@@ -138,30 +138,45 @@ class API_Call:
         self.query = query
 
     def fetch(self):
+        '''Print "fetching" message and returns JSON search results'''
+        print(f"Fetching books matching: '{self.query}'\n")
+        self.return_response()
+
+    def return_response(self):
         '''Submit API get request & return response.
                 
-        :param query: User-submitted search query.
-        :type query: str
-        :return: List of Book class objects representing search results. 
-        :rtype: list
+        If server responds with status code not in 200 range: prints error message 
+        with specific error code. If requests module raises exception, returns message 
+        with exception. If search returns no results, returns notification.
+                 
+        :return: Prints search results or error message, and menu with available options. 
+        :rtype: str
         '''
-        # TO-DO: Wrap API calls in try/except blocks 
-        # if status code not in 200 range: print error message according to code
-        # return message in case of timeout
-        response = requests.get(
-            f'https://www.googleapis.com/books/v1/volumes?q={self.query}&maxResults=5').json()
+        try:
+            response = requests.get(
+        f'https://www.googleapis.com/books/v1/volumes?q={self.query}&maxResults=5')
 
-        if response['totalItems'] == 0:
-            return []
-        else:
-            return self.format_search_results(response)
+            # Print error message if server responds with status other than 2xx 
+            if not response.status_code // 100 == 2:
+                self.display_error(f'Error: Failed to fetch {response}')
+
+            # Print error message if server responds with zero results
+            elif response.json()['totalItems'] == 0:
+                self.display_error('Sorry, your search returned 0 results.')
+            else:
+                books = self.format_search_results(response.json())
+                self.display_results(books)
+
+        except requests.exceptions.RequestException as e:
+            # Print error message if a serious problem occurred (timeout, connection error)
+            self.display_error(f'Error: {e}') 
     
     def format_search_results(self, data):
         '''Extract relevant information from API response data & save items as Book instances.
                 
         :param data: User-submitted search query.
         :type data: str
-        :return: List of Book objects representing search results. 
+        :return: Str representing search results and . 
         :rtype: list
         '''
         results = []
@@ -180,7 +195,7 @@ class API_Call:
                 publisher = item['volumeInfo']['publisher']
             result = Book(title, author, publisher)
             results.append(result)
-        self.display_results(results)
+        return self.display_results(results)
 
     def display_results(self, results):
         '''Print formatted search results & new menu options.
@@ -190,13 +205,14 @@ class API_Call:
         :return: List of Book class instances representing search results. 
         :rtype: list
         '''
-        if results == []:
-            print(style_output('Sorry, your search returned 0 results.', 'warning'))
-            Menu(['new', 'view', 'exit']).print()
-        else:
-            print(style_output('\nResults matching your query:\n', 'underline'))
-            display_books(results)
-            Menu(['save', 'new', 'view', 'exit'], results).print()
+        print(style_output('\nResults matching your query:\n', 'underline'))
+        display_books(results)
+        Menu(['save', 'new', 'view', 'exit'], results).print()
+
+    def display_error(self, err):    
+        print(style_output(err, 'warning'))
+        Menu(['new', 'view', 'exit']).print()
+
 
 # SHARED UTILITIES
 
@@ -254,36 +270,25 @@ def style_output(string, style):
     }
     return f"{styles[style]}{string}{reset}"
 
-def cancel():
-    pass
-
-def confirm():
-    pass
-
 
 # SEARCH VIEW
 
 def search():
-    '''Display search header & prompts user for query.
-   
-    Prompt user to input search query. Repeat prompt if user tries to enter a blank query.
-        
-    :return: User-inputted query term(s).
-    :rtype: str
-    '''
+    '''Display search header & prompts user for query.'''
     Header('search').print()
     prompt()
 
 def prompt():
-        query = input('Search for books containing the query:  ')
-
-        # TO DO: add escape key to cancel query
-        # TO-DO: refactor if/else to try/except so that this function has one return type
-        if query == '':
-            print(style_output('Please enter a valid query.\n', 'warning'))
-            prompt()
-        else:
-           API_Call.fetch(query)
+    '''Prompt user to input search query. Repeat prompt if user tries to enter a blank query.'''
+    query = input('Search for books containing the query:  ')
+    # TO DO: add escape key to cancel query
+    # TO-DO: refactor if/else to try/except so that this function has one return type
+    
+    if query == '':
+        print(style_output('Please enter a valid query.\n', 'warning'))
+        prompt()
+    else:
+        API_Call(query).fetch()
 
 def save(search_results):
     '''Save selected book to reading list.
