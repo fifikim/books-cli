@@ -1,10 +1,12 @@
 {
     "reading_list": [
-        "{\n    \"title\": \"Kindred\",\n    \"author\": \"Octavia E. Butler\",\n    \"publisher\": \"Beacon Press\"\n}",
-        "{\n    \"title\": \"Dhalgren\",\n    \"author\": \"Samuel R. Delany\",\n    \"publisher\": \"Open Road Media\"\n}",
-        "{\n    \"title\": \"Stories of Your Life and Others\",\n    \"author\": \"Ted Chiang\",\n    \"publisher\": \"Knopf\"\n}",
-        "{\n    \"title\": \"Simians, Cyborgs, and Women\",\n    \"author\": \"Donna Haraway\",\n    \"publisher\": \"Routledge\"\n}",
-        "{\n    \"title\": \"Banana Man\",\n    \"author\": \"Ray Comfort\",\n    \"publisher\": \"\"\n}",
-        "{\n    \"title\": \"Monkey King\",\n    \"author\": \"Wu Cheng'en\",\n    \"publisher\": \"Penguin\"\n}"
+        "{\n    \"id\": \"4kLYAAAAMAAJ\",\n    \"title\": \"The Hodgepodge Book\",\n    \"author\": \"Duncan Emrich\",\n    \"publisher\": \"\"\n}",
+        "{\n    \"id\": \"XQfWDwAAQBAJ\",\n    \"title\": \"Lamborghini\",\n    \"author\": \"\",\n    \"publisher\": \"Rizzoli Publications\"\n}",
+        "{\n    \"id\": \"A2BOApy89KAC\",\n    \"title\": \"The Book of the Lamborghini Urraco\",\n    \"author\": \"Arnstein Landsem\",\n    \"publisher\": \"Veloce Publishing Ltd\"\n}",
+        "{\n    \"id\": \"tTn4AAAAQBAJ\",\n    \"title\": \"Keyboarding Made Simple\",\n    \"author\": \"Leigh E. Zeitz, Ph.D.\",\n    \"publisher\": \"Crown\"\n}",
+        "{\n    \"id\": \"JN6IRLJx0RcC\",\n    \"title\": \"Alexander and the Terrible, Horrible, No Good, Very Bad Day\",\n    \"author\": \"Judith Viorst, Ray Cruz\",\n    \"publisher\": \"Simon and Schuster\"\n}",
+        "{\n    \"id\": \"uRMS4mwr-hYC\",\n    \"title\": \"Horrible Harry's Secret\",\n    \"author\": \"Suzy Kline\",\n    \"publisher\": \"Puffin\"\n}",
+        "{\n    \"id\": \"uRMS4mwr-hYC\",\n    \"title\": \"Horrible Harry's Secret\",\n    \"author\": \"Suzy Kline\",\n    \"publisher\": \"Puffin\"\n}",
+        "{\n    \"id\": \"6VyMtgAACAAJ\",\n    \"title\": \"Government Auditing Standards\",\n    \"author\": \"Government Accounting Office, U.S. Government\",\n    \"publisher\": \"www.Militarybookshop.CompanyUK\"\n}"
     ]
 }

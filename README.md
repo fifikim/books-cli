@@ -178,7 +178,7 @@ The following are my responses to the questions posed by my reviewer, as well my
 
 ### Revision - Day Two <a name = "revision - day-two"></a>
 - Goals:
-  - Tests
+  - Create mocks to test API calls and saves to the reading list
   - Begin implementing additional features
 
 - Wins: 

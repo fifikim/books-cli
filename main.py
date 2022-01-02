@@ -86,17 +86,19 @@ class Menu:
 
 class Book:
     '''This class handles book items.'''
-    def __init__(self, title, author, publisher):
+    def __init__(self, id, title, author, publisher):
+        self.id = id
         self.title = title
         self.author = author
         self.publisher = publisher
 
+    def __repr__(self):
+        return f"\n    Title: {self.title}\n    Author(s): {self.author}\n    Publisher: {self.publisher}"
+
     def print(self):
         '''prints formatted details for selected book'''
         title = style_output(self.title, 'title')
-        print(f'    Title: {title}')
-        print(f'    Author(s): {self.author}')
-        print(f'    Publisher: {self.publisher}')
+        print(f"    Title: {title}\n    Author(s): {self.author}\n    Publisher: {self.publisher}\n")
 
 class File:  
     '''This class handles JSON files.'''
@@ -113,7 +115,7 @@ class File:
             books = []
             for record in list:
                 book = json.loads(record)
-                books.append(Book(book['title'], book['author'], book['publisher']))
+                books.append(Book(book['id'], book['title'], book['author'], book['publisher']))
             return books
 
     def save(self, book):
@@ -122,11 +124,14 @@ class File:
         :param book: Selected search result.
         :type book: 
         '''
+        json_book = json.dumps(book.__dict__, indent=4)
+
         with open(self.filename, 'r+') as file:
             file_data = json.load(file)
-            file_data['reading_list'].append(book)
+            file_data['reading_list'].append(json_book)
             file.seek(0)
             json.dump(file_data, file, indent=4)
+        print(style_output(f'\nSaved: {repr(book)}', 'success'))
 
     def create(self):
         '''Create new JSON file to store new reading list'''
@@ -174,13 +179,14 @@ class API_Call:
     def format_search_results(self, data):
         '''Extract relevant information from API response data & save items as Book instances.
                 
-        :param data: User-submitted search query.
-        :type data: str
-        :return: Str representing search results and . 
+        :param data: Server response body formatted as JSON object.
+        :type data: 
+        :return: List of Book objects representing search results.
         :rtype: list
         '''
         results = []
         for item in data['items']:
+            id = item['id']
             if 'title' not in item['volumeInfo']:
                 title = ''
             else:
@@ -193,7 +199,7 @@ class API_Call:
                 publisher = ''
             else:
                 publisher = item['volumeInfo']['publisher']
-            result = Book(title, author, publisher)
+            result = Book(id, title, author, publisher)
             results.append(result)
         return self.display_results(results)
 
@@ -202,8 +208,8 @@ class API_Call:
                     
         :param results: List of Book objects representing search results.
         :type results: list
-        :return: List of Book class instances representing search results. 
-        :rtype: list
+        :return: Prints search results and menu with available options. 
+        :rtype: str
         '''
         print(style_output('\nResults matching your query:\n', 'underline'))
         display_books(results)
@@ -282,7 +288,6 @@ def prompt():
     '''Prompt user to input search query. Repeat prompt if user tries to enter a blank query.'''
     query = input('Search for books containing the query:  ')
     # TO DO: add escape key to cancel query
-    # TO-DO: refactor if/else to try/except so that this function has one return type
     
     if query == '':
         print(style_output('Please enter a valid query.\n', 'warning'))
@@ -298,11 +303,10 @@ def save(search_results):
     '''
     selection = input('Please enter the ID of the book to save:   ')
     valid = validate_selection(selection, search_results)
+    
     if valid:
-        selected_book = json.dumps(
-            search_results[int(selection) - 1].__dict__, indent=4)
-        File('reading_list').save(selected_book)
-        print(style_output(f'Saved: {selected_book}', 'success'))
+        book = search_results[int(selection) - 1]
+        File('reading_list').save(book)
         Menu(['another', 'new', 'view', 'exit'], search_results).print()
     else:
         print(style_output(
