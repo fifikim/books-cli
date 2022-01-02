@@ -46,7 +46,11 @@ class Menu:
             },
             'view': {
                 'label': 'View my reading list',
-                'function': view_reading_list
+                'function': view_list
+            },
+            'delete_book': {
+                'label': 'Delete a saved book',
+                'function': delete_book
             },
             'exit': {
                 'label': 'Exit to home',
@@ -77,6 +81,8 @@ class Menu:
             option = self.options[int(selection) - 1]
             if option == 'save' or option == 'another':
                 save(self.results)
+            elif option == 'delete_book':
+                delete_book(self.results)
             else:
                 self.options_dict[option]['function']()
         else:
@@ -91,6 +97,7 @@ class Book:
         self.title = title
         self.author = author
         self.publisher = publisher
+        self.read = False
 
     def __repr__(self):
         return f"\n    Title: {self.title}\n    Author(s): {self.author}\n    Publisher: {self.publisher}"
@@ -104,7 +111,16 @@ class File:
     '''This class handles JSON files.'''
     def __init__(self, name):
         self.name = name
-        self.filename = f'{name}.json'    
+        self.filename = f'{name}.json'   
+
+    def display_list(self):
+        list = self.load()
+
+        if len(list) == 0:
+            print(style_output('There are no books in your reading list.', 'warning'))
+        else:
+            display_books(list)
+        Menu(['search', 'delete_book', 'mark_as_read', 'view_read', 'create_list', 'exit'], list).print()
 
     def load(self):
         '''Load reading list & format JSON strings as a list of Book instances.'''
@@ -125,6 +141,20 @@ class File:
                 return True
         return False
 
+    def delete_record(self, to_delete):
+        books = self.load()
+
+        file_data = {}
+        file_data['reading_list'] = []
+        for book in books:
+            if book.id is not to_delete.id:
+                json_book = json.dumps(book.__dict__, indent=4)
+                file_data['reading_list'].append(json_book)
+
+        with open(self.filename, 'w') as file:
+            json.dump(file_data, file, indent=4)
+        print(style_output(f'"{to_delete.title}" was deleted.', 'success'))
+
     def save(self, book):
         '''Append book data to reading list JSON file.
         
@@ -144,9 +174,6 @@ class File:
                 json.dump(file_data, file, indent=4)
             print(style_output(f'\nSaved: {repr(book)}', 'success'))
 
-    def create(self):
-        '''Create new JSON file to store new reading list'''
-        pass
 
 class API_Call:
     '''This class handles calls to the GoogleBooks API.'''
@@ -327,16 +354,28 @@ def save(search_results):
 
 # READING LIST VIEW
 
-def view_reading_list():
+def view_list():
     '''Display reading list header & print saved books.'''
     Header('reading list').print()
-    list = File('reading_list').load()
+    File('reading_list').display_list()
 
-    if len(list) == 0:
-        print(style_output('There are no books in your reading list.', 'warning'))
+def delete_book(list):
+    selection = input('Please enter the ID of the book to delete:   ')
+    valid = validate_selection(selection, list)
+    
+    if valid:
+        book = list[int(selection) - 1]
+        confirm = input(style_output(f'\nThis will delete the record for "{book.title}". Enter "y" to confirm:  ', 'warning'))
+        if confirm == 'y':
+            File('reading_list').delete_record(book)
+            Menu(['view', 'exit'], list).print()
+        else:
+            print('Delete cancelled.')
+            Menu(['view', 'exit'], list).print()
     else:
-        display_books(list)
-    Menu(['search', 'exit']).print()
+        print(style_output(
+            f'Invalid selection. Please choose from IDs #1-{len(list)}.\n', 'warning'))
+        delete_book(list)
 
 
 # QUIT VIEW
