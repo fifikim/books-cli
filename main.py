@@ -2,10 +2,28 @@ import json
 import requests
 import math
 
+
 # CLASSES
 
-# prints menu with options for current view & executes user-selected action
+class Header:
+    '''This class generates decorative page headers.'''
+    def __init__(self, name):
+        self.name = name.upper()
+
+    def print(self):
+        '''Print page header for current view.'''
+        margin = math.floor((35 - len(self.name)) / 2) * ' '
+        border = '=' * 30
+        border2 = '=' * 34
+        heading = style_output(self.name, 'header')
+        print(f'\n\n   {border}')
+        print(f" {style_output(border2, 'border')}")
+        print(f'={margin}{heading}{margin}=')
+        print(f" {style_output(border2, 'border')}")
+        print(f'   {border}\n\n')
+        
 class Menu:
+    '''This class generates page menus and executes user selections of menu options.'''
     def __init__(self, options, results=[]):
         self.options = options
         self.results = results
@@ -41,6 +59,7 @@ class Menu:
         }
 
     def print(self):
+        '''Print menu with available options for current view.'''
         print(style_output('\n\nWhat would you like to do?', 'underline'))
         for (i, element) in enumerate(self.options, start=1):
             label = self.options_dict[element]['label']
@@ -50,6 +69,7 @@ class Menu:
         self.select()
 
     def select(self):
+        '''Prompt user for selection and execute selected action.'''
         selection = input('Please enter your selection:  ')
         valid = validate_selection(selection, self.options)
 
@@ -64,40 +84,148 @@ class Menu:
                 f'Invalid selection. Please choose from Options #1-{len(self.options)}.\n', 'warning'))
             self.select()
 
-# prints header for current view
-class Header:
-    def __init__(self, name):
-        self.name = name.upper()
-
-    def print(self):
-        margin = math.floor((35 - len(self.name)) / 2) * ' '
-        border = '=' * 30
-        border2 = '=' * 34
-        heading = style_output(self.name, 'header')
-        print(f'\n\n   {border}')
-        print(f" {style_output(border2, 'border')}")
-        print(f'={margin}{heading}{margin}=')
-        print(f" {style_output(border2, 'border')}")
-        print(f'   {border}\n\n')
-
-# stores book data as object & prints formatted details
 class Book:
+    '''This class handles book items.'''
     def __init__(self, title, author, publisher):
         self.title = title
         self.author = author
         self.publisher = publisher
 
     def print(self):
+        '''prints formatted details for selected book'''
         title = style_output(self.title, 'title')
         print(f'    Title: {title}')
         print(f'    Author(s): {self.author}')
         print(f'    Publisher: {self.publisher}')
 
+class File:  
+    '''This class handles JSON files.'''
+    def __init__(self, name):
+        self.name = name
+        self.filename = f'{name}.json'    
+
+    def load(self):
+        '''Load reading list & format JSON strings as a list of Book instances.'''
+        with open(self.filename) as file:
+            data = json.load(file)
+            list = data['reading_list']
+
+            books = []
+            for record in list:
+                book = json.loads(record)
+                books.append(Book(book['title'], book['author'], book['publisher']))
+            return books
+
+    def save(self, book):
+        '''Append book data to reading list JSON file.
+        
+        :param book: Selected search result.
+        :type book: 
+        '''
+        with open(self.filename, 'r+') as file:
+            file_data = json.load(file)
+            file_data['reading_list'].append(book)
+            file.seek(0)
+            json.dump(file_data, file, indent=4)
+
+    def create(self):
+        '''Create new JSON file to store new reading list'''
+        pass
+
+class API_Call:
+    '''This class handles calls to the GoogleBooks API.'''
+    def __init__(self, query):
+        self.query = query
+
+    def fetch(self):
+        '''Print "fetching" message and returns JSON search results'''
+        print(f"Fetching books matching: '{self.query}'\n")
+        self.return_response()
+
+    def return_response(self):
+        '''Submit API get request & return response.
+                
+        If server responds with status code not in 200 range: prints error message 
+        with specific error code. If requests module raises exception, returns message 
+        with exception. If search returns no results, returns notification.
+                 
+        :return: Prints search results or error message, and menu with available options. 
+        :rtype: str
+        '''
+        try:
+            response = requests.get(
+        f'https://www.googleapis.com/books/v1/volumes?q={self.query}&maxResults=5')
+
+            # Print error message if server responds with status other than 2xx 
+            if not response.status_code // 100 == 2:
+                self.display_error(f'Error: Failed to fetch {response}')
+
+            # Print error message if server responds with zero results
+            elif response.json()['totalItems'] == 0:
+                self.display_error('Sorry, your search returned 0 results.')
+            else:
+                books = self.format_search_results(response.json())
+                self.display_results(books)
+
+        except requests.exceptions.RequestException as e:
+            # Print error message if a serious problem occurred (timeout, connection error)
+            self.display_error(f'Error: {e}') 
+    
+    def format_search_results(self, data):
+        '''Extract relevant information from API response data & save items as Book instances.
+                
+        :param data: User-submitted search query.
+        :type data: str
+        :return: Str representing search results and . 
+        :rtype: list
+        '''
+        results = []
+        for item in data['items']:
+            if 'title' not in item['volumeInfo']:
+                title = ''
+            else:
+                title = item['volumeInfo']['title']
+            if 'authors' not in item['volumeInfo']:
+                author = ''
+            else:
+                author = ', '.join(item['volumeInfo']['authors'])
+            if 'publisher' not in item['volumeInfo']:
+                publisher = ''
+            else:
+                publisher = item['volumeInfo']['publisher']
+            result = Book(title, author, publisher)
+            results.append(result)
+        return self.display_results(results)
+
+    def display_results(self, results):
+        '''Print formatted search results & new menu options.
+                    
+        :param results: List of Book objects representing search results.
+        :type results: list
+        :return: List of Book class instances representing search results. 
+        :rtype: list
+        '''
+        print(style_output('\nResults matching your query:\n', 'underline'))
+        display_books(results)
+        Menu(['save', 'new', 'view', 'exit'], results).print()
+
+    def display_error(self, err):    
+        print(style_output(err, 'warning'))
+        Menu(['new', 'view', 'exit']).print()
+
 
 # SHARED UTILITIES
 
-# validates user selection is available menu option
 def validate_selection(val, list):
+    '''Validate that a user selection is an available menu option.
+    
+    :param val: User-selected input.
+    :type val: str
+    :param list: List of available menu options.
+    :type list: list
+    :return: True if selection is valid, else False.
+    :rtype: boolean
+    '''
     max = len(list)
     if val:
         try:
@@ -109,14 +237,28 @@ def validate_selection(val, list):
         except ValueError:
             return False
 
-# formats books in a numbered list
 def display_books(list):
+    '''Print list of books as a numbered, formatted list.
+        
+    :param list: List of Book objects.
+    :type list: list
+    :return: Numbered, formatted list.
+    :rtype: str
+    '''
     for (i, book) in enumerate(list, start=1):
         print(style_output(f'ID {i}', 'header'))
         book.print()
 
-# applies text styling to terminal output
 def style_output(string, style):
+    '''Apply text styling to terminal output.
+        
+    :param string: The text to stylize.
+    :type string: str 
+    :param style: Style corresponding to key in 'styles' dictionary.
+    :type style: str 
+    :return: Text with colors and/or styles applied.
+    :rtype: str
+    '''
     reset = '\033[0;0m'
     styles = {
         'header': '\033[1;36m',
@@ -131,138 +273,72 @@ def style_output(string, style):
 
 # SEARCH VIEW
 
-# displays search header & prompts user for query
 def search():
-    header = Header('search')
-    header.print()
-    # TO DO: add escape key to cancel query
-    q = validate_query()
-    fetched = fetch_by(q)
-    display_results(fetched)
+    '''Display search header & prompts user for query.'''
+    Header('search').print()
+    prompt()
 
-# validates search query, repeats prompt if query is blank
-def validate_query():
+def prompt():
+    '''Prompt user to input search query. Repeat prompt if user tries to enter a blank query.'''
     query = input('Search for books containing the query:  ')
-    if query:
-        return query
-    else:
+    # TO DO: add escape key to cancel query
+    # TO-DO: refactor if/else to try/except so that this function has one return type
+    
+    if query == '':
         print(style_output('Please enter a valid query.\n', 'warning'))
-        validate_query()
-
-# submits api get request & returns relevant data from response
-def fetch_by(query):
-    response = requests.get(
-        f'https://www.googleapis.com/books/v1/volumes?q={query}&maxResults=5').json()
-    if response['totalItems'] == 0:
-        return False
-    search_results = (format_search_results(response))
-    return search_results
-
-# formats response data & saves as Book instance
-def format_search_results(data):
-    results = []
-    for item in data['items']:
-        if 'title' not in item['volumeInfo']:
-            title = ''
-        else:
-            title = item['volumeInfo']['title']
-        if 'authors' not in item['volumeInfo']:
-            author = ''
-        else:
-            author = ', '.join(item['volumeInfo']['authors'])
-        if 'publisher' not in item['volumeInfo']:
-            publisher = ''
-        else:
-            publisher = item['volumeInfo']['publisher']
-        result = Book(title, author, publisher)
-        results.append(result)
-    return results
-
-# prints formatted search results & new menu selections
-def display_results(results):
-    if results == False:
-        print(style_output('Sorry, your search returned 0 results.', 'warning'))
-        menu = Menu(['new', 'view', 'exit'])
-        menu.print()
+        prompt()
     else:
-        print(style_output('\nResults matching your query:\n', 'underline'))
-        display_books(results)
-        menu = Menu(['save', 'new', 'view', 'exit'], results)
-        menu.print()
+        API_Call(query).fetch()
 
-# saves selected book to reading list
 def save(search_results):
+    '''Save selected book to reading list.
+    
+    :param search_results: List of Book objects representing search results.
+    :type search_results: list
+    '''
     selection = input('Please enter the ID of the book to save:   ')
     valid = validate_selection(selection, search_results)
     if valid:
         selected_book = json.dumps(
             search_results[int(selection) - 1].__dict__, indent=4)
-        write_to_saved(selected_book)
+        File('reading_list').save(selected_book)
         print(style_output(f'Saved: {selected_book}', 'success'))
-        menu = Menu(['another', 'new', 'view', 'exit'], search_results)
-        menu.print()
+        Menu(['another', 'new', 'view', 'exit'], search_results).print()
     else:
         print(style_output(
             f'Invalid selection. Please choose from IDs #1-{len(search_results)}.\n', 'warning'))
         save(search_results)
 
-# appends book data to reading_list.json file
-def write_to_saved(book):
-    with open('reading_list.json', 'r+') as file:
-        file_data = json.load(file)
-        file_data["reading_list"].append(book)
-        file.seek(0)
-        json.dump(file_data, file, indent=4)
-
 
 # READING LIST VIEW
 
-# displays reading list header & prints saved books
 def view_reading_list():
-    header = Header('reading list')
-    header.print()
-    list = load_saved()
-    reading_list = format_loaded(list)
-    if len(reading_list) == 0:
+    '''Display reading list header & print saved books.'''
+    Header('reading list').print()
+    list = File('reading_list').load()
+
+    if len(list) == 0:
         print(style_output('There are no books in your reading list.', 'warning'))
     else:
-        display_books(reading_list)
-    menu = Menu(['search', 'exit'])
-    menu.print()
-
-# loads data from reading_list.json file 
-def load_saved():
-    with open('reading_list.json') as f:
-      data = json.load(f)
-      return data['reading_list']
-
-# formats JSON strings as list of Book instances
-def format_loaded(list):
-    books = []
-    for record in list:
-        book = json.loads(record)
-        books.append(Book(book['title'], book['author'], book['publisher']))
-    return books
+        display_books(list)
+    Menu(['search', 'exit']).print()
 
 
 # QUIT VIEW
 
-# displays quit header & goodbye message
 def quit():
-    quit_header = Header('quit')
-    quit_header.print()
+    '''Displays quit header & goodbye message.'''
+    Header('quit').print()
     print(style_output('\nThanks for using Books on 8th! Goodbye.\n', 'success'))
 
 
 # HOMEPAGE VIEW
 
-# displays homepage header & menu
 def main():
-    header = Header('home')
-    header.print()
+    '''Displays homepage header & menu.'''
+    Header('home').print()
     print(style_output('      Welcome to Books on 8th!', 'header'))
-    menu = Menu(['search', 'view', 'quit'])
-    menu.print()
+    Menu(['search', 'view', 'quit']).print()
 
 
 if __name__ == '__main__':
