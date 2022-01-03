@@ -139,13 +139,13 @@ The following are my responses to the questions posed by my reviewer, as well my
       - Help file
     - Search:
       - Specify max number of results to retrieve
-      - Specify type of search (author, title, description, publisher)
+      - ✅ Specify type of search (author, title, subject, keyword)
       - Choose where to save (existing/new list)
     - Reading List:
       - Create a new list
-      - Edit/delete an existing list
-      - Move/edit/delete an item in a list
-      - Prevent user from saving duplicate items (Add ID property to book class)
+      - Delete an existing list
+      - ✅ Delete an item in a list
+      - ✅ Prevent user from saving duplicate items (Add ID property to book class)
       - Mark item as read
       - Show list of read items
       - Search list/all 
