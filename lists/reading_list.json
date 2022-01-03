@@ -1,10 +1,9 @@
 {
-    "reading_list": [
+    "books": [
         "{\n    \"id\": \"uRMS4mwr-hYC\",\n    \"title\": \"Horrible Harry's Secret\",\n    \"author\": \"Suzy Kline\",\n    \"publisher\": \"Puffin\",\n    \"read\": false\n}",
         "{\n    \"id\": \"XQfWDwAAQBAJ\",\n    \"title\": \"Lamborghini\",\n    \"author\": \"\",\n    \"publisher\": \"Rizzoli Publications\",\n    \"read\": false\n}",
         "{\n    \"id\": \"A2BOApy89KAC\",\n    \"title\": \"The Book of the Lamborghini Urraco\",\n    \"author\": \"Arnstein Landsem\",\n    \"publisher\": \"Veloce Publishing Ltd\",\n    \"read\": false\n}",
         "{\n    \"id\": \"20BaAAAAYAAJ\",\n    \"title\": \"Green Eggs and Ham Cookbook\",\n    \"author\": \"Georgeanne Brennan\",\n    \"publisher\": \"Random House Books for Young Readers\",\n    \"read\": false\n}",
-        "{\n    \"id\": \"ZpvyzAEACAAJ\",\n    \"title\": \"Madame de Pompadour\",\n    \"author\": \"Nancy Mitford\",\n    \"publisher\": \"\",\n    \"read\": false\n}",
         "{\n    \"id\": \"oO9aAAAAMAAJ\",\n    \"title\": \"Bag of Bones\",\n    \"author\": \"Stephen King\",\n    \"publisher\": \"Scribner Book Company\",\n    \"read\": false\n}",
         "{\n    \"id\": \"6KYsEAAAQBAJ\",\n    \"title\": \"If It Bleeds\",\n    \"author\": \"Stephen King\",\n    \"publisher\": \"Simon and Schuster\",\n    \"read\": false\n}"
     ]

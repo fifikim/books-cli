@@ -21,6 +21,7 @@ Search for books and save selections to a reading list.
 - [Process: Revisions](#revision)
   - [Day One](#revision-day-one)
   - [Day Two](#revision-day-two)
+  - [Day Three](#revision-day-three)
 - [Process: Inital Submission](#initial-sub)
   - [Day One](#day-one)
   - [Day Two](#day-two)
@@ -139,10 +140,10 @@ The following are my responses to the questions posed by my reviewer, as well my
     - Search:
       - ✅ View more results
       - ✅ Specify type of search (author, title, subject, keyword)
-      - Choose where to save (existing/new list)
+      - ✅ Choose where to save (existing/new list)
     - Reading List:
-      - Create a new list
-      - Delete an existing list
+      - ✅ Create a new list
+      - ✅ Delete an existing list
       - ✅ Delete an item in a list
       - ✅ Prevent user from saving duplicate items (Add ID property to book class)
       - Mark item as read
@@ -191,6 +192,12 @@ The following are my responses to the questions posed by my reviewer, as well my
   - ❓ Wondering how I can store data like most recent search results & current index in the app so I don't have to keep passing multiple params between the Menu class. 
   - ❓ Confused about why the GoogleBooks API returns varying # of totalItems when I send identical calls multiple times. For example, when user flips through paginated search results, the heading displayed changes from 'Showing 1-5 of 426 results' to 'Showing 6-10 of 377 results'.
 <br><br>
+
+### Revision - Day Three <a name = "revision - day-three"></a>
+- Goals:
+  - Continue implementing additional features
+  - Clean up new code & look for ways to minimize duplication
+  - Begin testing new features & creating mocks to test API calls
 
 ## Process: Initial Submission (First Round) <a name = "intial-sub"></a>
 
@@ -271,7 +278,7 @@ Before I got started, I spent half a day researching approaches to building Pyth
 
 ---
 
-- Add hidden id key to book entries, enabling program to prevent user from creating duplicate entries in reading list.
+- 
 - Create additional tests to ensure print() and output() functions are working correctly
 
 <br><br>

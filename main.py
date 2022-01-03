@@ -1,6 +1,7 @@
 import json
 import requests
 import math
+import os
 
 
 # CLASSES
@@ -38,7 +39,10 @@ class PageMenu:
             'new': ['Start a new search', search],
             'save': ['Save a book to my reading list', save],
             'another': ['Save another book to my reading list', save],
-            'view': ['View my reading list', view_list],
+            'list': ['Go to my reading lists', lists],
+            'view': ['View a list', view_list],
+            'new_list': ['Create a new list', create_list],
+            'delete_list': ['Delete a list', delete_list],
             'delete_book': ['Delete a saved book', delete_book],
             'exit': ['Exit to home', main],
             'quit': ['Quit', quit]
@@ -46,7 +50,7 @@ class PageMenu:
 
     def print(self):
         '''Print menu with available options for current view.'''
-        print(style_output('\n\nWhat would you like to do?', 'underline'))
+        print(style_output('\nWhat would you like to do?', 'underline'))
         for (i, element) in enumerate(self.options, start=1):
             label = self.options_dict[element][0]
             id = style_output(i, 'header')
@@ -61,14 +65,14 @@ class PageMenu:
 
         if valid:
             option = self.options[int(selection) - 1]
-            if option in ['save', 'another', 'delete_book']:
+            if option in ['save', 'another']:
                 save(self.results, self.start_index)
-            elif option is 'delete_book':
+            elif option == 'delete_book':
                 delete_book(self.results)
-            elif option is 'prev':
+            elif option == 'prev':
                 index = int(self.start_index) - 5
                 ApiCall(self.type, self.query, self.search_query, index).fetch()
-            elif option is 'next':
+            elif option == 'next':
                 index = int(self.start_index) + 5
                 ApiCall(self.type, self.query, self.search_query, index).fetch()
             else:
@@ -121,6 +125,71 @@ class SearchMenu:
             search_query = f'{self.options[type][1]}{query}'
             ApiCall(search_by, query, search_query).fetch()
 
+class ListMenu:
+    def __init__(self, function, book='', search_results=[]):
+        self.function = function
+        self.options = list_all_lists()
+        self.book = book
+        self.search_results = search_results
+
+    def print(self):
+        '''Print menu with available options for current view.'''
+        print(style_output(f'\nWhich list would you like to {self.function}?', 'underline'))
+        for (i, element) in enumerate(self.options, start=1):
+            id = style_output(i, 'header')
+            print(f'{id} - {element}')
+        print('\n')
+        if self.function == 'view':
+            self.view()
+        elif self.function == 'delete':
+            self.delete()
+        elif self.function == 'save to':
+            self.save()
+
+    def view(self):
+        '''Prompt user for selection and execute selected action.'''
+        num = input('Please enter your selection:  ')
+        valid = validate_selection(num, self.options)
+
+        if valid:
+            name = self.options[int(num) - 1]
+            fname = name.lower().replace(' ', '_')
+            File(fname).display_list()
+        else:
+            print(style_output(
+                f'Invalid selection. Please choose from Options #1-{len(self.options)}.\n', 'warning'))
+            self.view()
+        #TO-DO: add menu
+
+    def delete(self):
+        '''Prompt user for selection and execute selected action.'''
+        num = input('Please enter your selection:  ')
+        valid = validate_selection(num, self.options)
+
+        if valid:
+            name = self.options[int(num) - 1]
+            fname = name.lower().replace(' ', '_')
+            File(fname).delete()
+        else:
+            print(style_output(
+                f'Invalid selection. Please choose from Options #1-{len(self.options)}.\n', 'warning'))
+            self.delete()
+        # TO-DO: add menu
+    
+    def save(self):
+        num = input('Please enter your selection:  ')
+        valid = validate_selection(num, self.options)
+
+        if valid:
+            name = self.options[int(num) - 1]
+            fname = name.lower().replace(' ', '_')
+            File(fname).save(self.book)
+            PageMenu(['another', 'new', 'view', 'exit'], self.search_results).print()
+        else:
+            print(style_output(
+                f'Invalid selection. Please choose from Options #1-{len(self.options)}.\n', 'warning'))
+            self.delete()
+
 class Book:
     '''This class handles book items.'''
     def __init__(self, id, title, author, publisher):
@@ -141,8 +210,8 @@ class Book:
 class File:  
     '''This class handles JSON files.'''
     def __init__(self, name):
-        self.name = name
-        self.filename = f'lists/{name}.json'   
+        self.name = f"{name.title().replace('_', ' ')}"
+        self.filename = f"lists/{name.lower().replace(' ', '_')}.json"   
 
     def display_list(self):
         '''Print formatted reading list or empty list notification.'''
@@ -157,8 +226,8 @@ class File:
     def load(self):
         '''Load reading list & format JSON strings as a list of Book instances.'''
         with open(self.filename) as file:
-            data = json.load(file)
-            list = data['reading_list']
+            file_data = json.load(file)
+            list = file_data['books']
 
             books = []
             for record in list:
@@ -187,13 +256,13 @@ class File:
         :type to_delete: Book obj
         '''
         books = self.load()
-
         file_data = {}
-        file_data['reading_list'] = []
+        file_data['books'] = []
+
         for book in books:
-            if book.id is not to_delete.id:
+            if book.id != to_delete.id:
                 json_book = json.dumps(book.__dict__, indent=4)
-                file_data['reading_list'].append(json_book)
+                file_data['books'].append(json_book)
 
         with open(self.filename, 'w') as file:
             json.dump(file_data, file, indent=4)
@@ -213,10 +282,23 @@ class File:
         else:
             with open(self.filename, 'r+') as file:
                 file_data = json.load(file)
-                file_data['reading_list'].append(json_book)
+                file_data['books'].append(json_book)
                 file.seek(0)
                 json.dump(file_data, file, indent=4)
-            print(style_output(f'\nSaved: {repr(book)}', 'success'))
+            print(style_output(f'\nSaved to {self.name}: {repr(book)}', 'success'))
+    
+    def create(self):
+        '''Create a new reading list'''
+        file_data = {}
+        file_data['books'] = []
+
+        with open(self.filename, 'w') as file:
+            json.dump(file_data, file, indent=4)
+
+        print(style_output(f'New list "{self.name}" created.', 'success'))
+
+    def delete(self):
+        os.remove(self.filename)
 
 class ApiCall:
     '''This class handles calls to the GoogleBooks API.'''
@@ -241,7 +323,6 @@ class ApiCall:
         :rtype: str
         '''
         url = f'https://www.googleapis.com/books/v1/volumes?q={self.search_query}&maxResults=5&startIndex={self.start_index}'
-        print(url)
 
         try:
             response = requests.get(url)
@@ -372,6 +453,17 @@ def style_output(string, style):
     }
     return f"{styles[style]}{string}{reset}"
 
+def list_all_lists():
+    list_names = os.listdir('./lists')
+
+    clean_list = []
+
+    for list in list_names:
+        name = list.split('.')[0].title().replace("_", " ")
+        clean_list.append(name)
+
+    return clean_list
+
 
 # SEARCH VIEW
 
@@ -387,12 +479,11 @@ def save(search_results, start_index):
     :type search_results: list
     '''
     selection = int(input('Please enter the ID of the book to save:   '))
-    
+    # TO-DO: prompt user to select which reading list book is saved
     if selection in range(start_index + 1, start_index + 6):
         index = selection - start_index - 1
         book = search_results[index]
-        File('reading_list').save(book)
-        PageMenu(['another', 'new', 'view', 'exit'], search_results).print()
+        ListMenu('save to', book).print()
     else:
         print(style_output(
             f'Invalid selection. Please choose from IDs #{start_index + 1} - {start_index + 5}.\n', 'warning'))
@@ -401,10 +492,15 @@ def save(search_results, start_index):
 
 # READING LIST VIEW
 
-def view_list():
+def lists():
     '''Display reading list header & print saved books.'''
-    Header('reading list').print()
-    File('reading_list').display_list()
+    Header('my reading lists').print()
+
+    # TO-DO: prompt user to select reading list to view
+    PageMenu(['view', 'new_list', 'delete_list']).print()
+    
+def view_list():
+    ListMenu('view').print()
 
 def delete_book(list):
     '''Delete a book saved to a reading list.'''
@@ -425,6 +521,16 @@ def delete_book(list):
             f'Invalid selection. Please choose from IDs #1-{len(list)}.\n', 'warning'))
         delete_book(list)
 
+def create_list():
+    print('This fn will create a new reading list.')
+
+    name = input('Please enter a name for the new list:    ')
+    # TO-DO: validate name not already taken
+    # TO-DO: validate no special characters that would interfere with filenaming
+    File(name).create()
+
+def delete_list():
+    ListMenu('delete').print()  
 
 # QUIT VIEW
 
@@ -440,7 +546,7 @@ def main():
     '''Displays homepage header & menu.'''
     Header('home').print()
     print(style_output('      Welcome to Books on 8th!', 'header'))
-    PageMenu(['search', 'view', 'quit']).print()
+    PageMenu(['search', 'list', 'quit']).print()
 
 
 if __name__ == '__main__':
