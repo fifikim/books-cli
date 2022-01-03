@@ -24,11 +24,17 @@ class Header:
         
 class PageMenu:
     '''This class generates page menus and executes user selections of menu options.'''
-    def __init__(self, options, results=[]):
+    def __init__(self, options, results=[], type='', query='', search_query='', start_index=0):
         self.options = options
         self.results = results
+        self.type = type
+        self.query = query
+        self.search_query = search_query
+        self.start_index = start_index
         self.options_dict = {
             'search': ['Search for books', search],
+            'next': ['Show next 5 results'],
+            'prev': ['Show previous 5 results'],
             'new': ['Start a new search', search],
             'save': ['Save a book to my reading list', save],
             'another': ['Save another book to my reading list', save],
@@ -55,10 +61,16 @@ class PageMenu:
 
         if valid:
             option = self.options[int(selection) - 1]
-            if option == 'save' or option == 'another':
-                save(self.results)
-            elif option == 'delete_book':
+            if option in ['save', 'another', 'delete_book']:
+                save(self.results, self.start_index)
+            elif option is 'delete_book':
                 delete_book(self.results)
+            elif option is 'prev':
+                index = int(self.start_index) - 5
+                ApiCall(self.type, self.query, self.search_query, index).fetch()
+            elif option is 'next':
+                index = int(self.start_index) + 5
+                ApiCall(self.type, self.query, self.search_query, index).fetch()
             else:
                 self.options_dict[option][1]()
         else:
@@ -99,7 +111,7 @@ class SearchMenu:
     def prompt_query(self, type):
         '''Prompt user to input search query. Repeat prompt if user tries to enter a blank query.'''
         search_by = self.options[type][0]
-        query = input(f'Search by {search_by}:  ')
+        query = input(f'Please enter the {search_by} to search:  ')
         # TO DO: add escape key to cancel query
         
         if query == '':
@@ -185,7 +197,7 @@ class File:
 
         with open(self.filename, 'w') as file:
             json.dump(file_data, file, indent=4)
-        print(style_output(f'"{to_delete.title}" was deleted.', 'success'))
+        print(style_output(f'"{to_delete.title}" deleted.', 'success'))
 
     def save(self, book):
         '''Append book data to reading list JSON file.
@@ -208,14 +220,14 @@ class File:
 
 class ApiCall:
     '''This class handles calls to the GoogleBooks API.'''
-    def __init__(self, type, query, search_query):
+    def __init__(self, type, query, search_query, start_index=0):
         self.type = type
         self.query = query
         self.search_query = search_query
+        self.start_index = start_index
 
     def fetch(self):
         '''Print "fetching" message and returns JSON search results'''
-        print(f"Fetching books with {self.type} matching: '{self.query}'\n")
         self.return_response()
 
     def return_response(self):
@@ -228,9 +240,11 @@ class ApiCall:
         :return: Prints search results or error message, and menu with available options. 
         :rtype: str
         '''
+        url = f'https://www.googleapis.com/books/v1/volumes?q={self.search_query}&maxResults=5&startIndex={self.start_index}'
+        print(url)
+
         try:
-            response = requests.get(
-        f'https://www.googleapis.com/books/v1/volumes?q={self.search_query}&maxResults=5')
+            response = requests.get(url)
 
             # Print error message if server responds with status other than 2xx 
             if not response.status_code // 100 == 2:
@@ -240,8 +254,7 @@ class ApiCall:
             elif response.json()['totalItems'] == 0:
                 self.display_error('Sorry, your search returned 0 results.')
             else:
-                books = self.format_search_results(response.json())
-                self.display_results(books)
+                self.format_search_results(response.json())
 
         except requests.exceptions.RequestException as e:
             # Print error message if a serious problem occurred (timeout, connection error)
@@ -255,6 +268,7 @@ class ApiCall:
         :return: List of Book objects representing search results.
         :rtype: list
         '''
+        total = data['totalItems']
         results = []
         for item in data['items']:
             id = item['id']
@@ -272,9 +286,9 @@ class ApiCall:
                 publisher = item['volumeInfo']['publisher']
             result = Book(id, title, author, publisher)
             results.append(result)
-        return self.display_results(results)
+        return self.display_results(results, total, self.start_index)
 
-    def display_results(self, results):
+    def display_results(self, results, total, start_index):
         '''Print formatted search results & new menu options.
                     
         :param results: List of Book objects representing search results.
@@ -282,9 +296,20 @@ class ApiCall:
         :return: Prints search results and menu with available options. 
         :rtype: str
         '''
-        print(style_output('\nResults matching your query:\n', 'underline'))
-        display_books(results)
-        PageMenu(['save', 'new', 'view', 'exit'], results).print()
+        if len(results) == 1:
+            print(style_output(f'\nShowing 1 result matching {self.type}: "{self.query}"\n', 'underline'))
+        else:
+            start = int(start_index) + 1
+            end = start + len(results) - 1
+            print(style_output(f'\nShowing {start} - {end} of {total} results matching {self.type}: "{self.query}"\n', 'underline'))
+        display_books(results, start)
+
+        options = ['prev', 'next', 'save', 'new', 'exit']
+        if start == 1:
+            options.remove('prev')
+        if end == total:
+            options.remove('next')
+        PageMenu(options, results, self.type, self.query, self.search_query, self.start_index).print()
 
     def display_error(self, err):    
         print(style_output(err, 'warning'))
@@ -314,7 +339,7 @@ def validate_selection(val, list):
         except ValueError:
             return False
 
-def display_books(list):
+def display_books(list, start_num=1):
     '''Print list of books as a numbered, formatted list.
         
     :param list: List of Book objects.
@@ -322,7 +347,7 @@ def display_books(list):
     :return: Numbered, formatted list.
     :rtype: str
     '''
-    for (i, book) in enumerate(list, start=1):
+    for (i, book) in enumerate(list, start=start_num):
         print(style_output(f'ID {i}', 'header'))
         book.print()
 
@@ -353,36 +378,25 @@ def style_output(string, style):
 def search():
     '''Display search header & prompts user for query.'''
     Header('search').print()
-    prompt_type()
-
-def prompt_type():
-    '''Prompt user to input search query. Repeat prompt if user tries to enter a blank query.'''
-
     SearchMenu().print()
-    
-    # if query == '':
-    #     print(style_output('Please enter a valid query.\n', 'warning'))
-    #     prompt_type()
-    # else:
-    #     prompt_query()
 
-def save(search_results):
+def save(search_results, start_index):
     '''Save selected book to reading list.
     
     :param search_results: List of Book objects representing search results.
     :type search_results: list
     '''
-    selection = input('Please enter the ID of the book to save:   ')
-    valid = validate_selection(selection, search_results)
+    selection = int(input('Please enter the ID of the book to save:   '))
     
-    if valid:
-        book = search_results[int(selection) - 1]
+    if selection in range(start_index + 1, start_index + 6):
+        index = selection - start_index - 1
+        book = search_results[index]
         File('reading_list').save(book)
         PageMenu(['another', 'new', 'view', 'exit'], search_results).print()
     else:
         print(style_output(
-            f'Invalid selection. Please choose from IDs #1-{len(search_results)}.\n', 'warning'))
-        save(search_results)
+            f'Invalid selection. Please choose from IDs #{start_index + 1} - {start_index + 5}.\n', 'warning'))
+        save(search_results, start_index)
 
 
 # READING LIST VIEW
@@ -402,10 +416,10 @@ def delete_book(list):
         confirm = input(style_output(f'\nThis will delete the record for "{book.title}". Enter "y" to confirm:  ', 'warning'))
         if confirm == 'y':
             File('reading_list').delete_record(book)
-            Menu(['view', 'exit'], list).print()
+            PageMenu(['view', 'exit'], list).print()
         else:
             print('Delete cancelled.')
-            Menu(['view', 'exit'], list).print()
+            PageMenu(['view', 'exit'], list).print()
     else:
         print(style_output(
             f'Invalid selection. Please choose from IDs #1-{len(list)}.\n', 'warning'))

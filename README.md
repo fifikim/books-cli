@@ -136,9 +136,8 @@ The following are my responses to the questions posed by my reviewer, as well my
     - Home:
       - Log in / log out 
       - Create a new account
-      - Help file
     - Search:
-      - Specify max number of results to retrieve
+      - ✅ View more results
       - ✅ Specify type of search (author, title, subject, keyword)
       - Choose where to save (existing/new list)
     - Reading List:
@@ -148,7 +147,6 @@ The following are my responses to the questions posed by my reviewer, as well my
       - ✅ Prevent user from saving duplicate items (Add ID property to book class)
       - Mark item as read
       - Show list of read items
-      - Search list/all 
     - Quit:
       - Confirm quit
 
@@ -178,18 +176,20 @@ The following are my responses to the questions posed by my reviewer, as well my
 
 ### Revision - Day Two <a name = "revision - day-two"></a>
 - Goals:
-  - Create mocks to test API calls and saves to the reading list
   - Begin implementing additional features
 
 - Wins: 
-  - ✅
-  - ✅ 
-  - ✅ 
+  - ✅ Added validation to prevent duplicate books saved to a reading list.
+  - ✅ Added feature allowing users to delete books from a reading list.
+  - ✅ Added feature allowing users to choose type of search to perform (title, author, subject, keyword).
+  - ✅ Added feature that paginates search results, allowing users to view all results by viewing next/previous page.
 
 - Blockers:
-  - ❓ 
-  - ❓ 
-
+  - ❓ Code is a mess! I know I'm introducing lots of lines of duplicate code right now (like replicating my PageMenu and SearchMenu classes instead of extending a Menu base class), but my logic right now is that it'll be simpler/faster to implement the new features and then see where I can streamline later.
+  - ❓ Struggled to implement features that involve creating new reading lists and manipulating existing lists. Decided to take a break from this to work on other features -- will start up again tomorrow with fresh eyes.
+  - ❓ Realized that my API error messages are not very user-friendly. Want to replace these with more detailed, less technical messages.
+  - ❓ Wondering how I can store data like most recent search results & current index in the app so I don't have to keep passing multiple params between the Menu class. 
+  - ❓ Confused about why the GoogleBooks API returns varying # of totalItems when I send identical calls multiple times. For example, when user flips through paginated search results, the heading displayed changes from 'Showing 1-5 of 426 results' to 'Showing 6-10 of 377 results'.
 <br><br>
 
 ## Process: Initial Submission (First Round) <a name = "intial-sub"></a>
