@@ -27,7 +27,7 @@ class Book:
 class File:  
     '''This class handles JSON files.'''
     def __init__(self, name):
-        self.name = f"{name.replace('_', ' ')}"
+        self.name = f"{name.replace('_', ' ').title()}"
         self.filename = f"lists/{name.lower().replace(' ', '_')}.json"   
 
     def load(self):
@@ -260,7 +260,7 @@ class Menu:
         else:
             print(style_output(
                 f'Invalid selection. Please choose from Options #1-{len(self.options)}.\n', 'warning'))
-            self.select()
+            return self.select()
 
 class SelectTarget:
     '''This class generates menus that allow user to select a target to perform a given action.'''
@@ -270,9 +270,6 @@ class SelectTarget:
         self.action = action
         self.start_num = start_num
 
-    # TO-DO: invalid selections are breaking this fn, but not select_without_list - why??
-    # try: either make separate fn to display options and then use select w.o list
-    # or make menu class take optional message param & use that for selections
     def select_from_list(self):
         '''Print list of available targets and prompt user to select one option.'''
         self.show_list()
@@ -287,7 +284,6 @@ class SelectTarget:
         print('\n')    
     
     def prompt(self):
-        #pass in list
         '''Prompt user to select from list shown.'''
         num = input('Please enter your selection:  ')
         valid = validate_selection(num, self.list, self.start_num)
@@ -298,7 +294,7 @@ class SelectTarget:
         else:
             print(style_output(
                 f'Invalid selection. Please choose from Options #1-{len(self.list)}.\n', 'warning'))
-            self.prompt()
+            return self.prompt()
     
     def select_without_list(self):
         '''Prompt user for selection when options have already been printed.'''
@@ -313,7 +309,7 @@ class SelectTarget:
             end_num = int(self.start_num) + len(self.list) - 1
             print(style_output(
                 f'Invalid selection. Please choose from IDs #{self.start_num} - {end_num}.\n', 'warning'))
-            self.select_without_list()
+            return self.select_without_list()
 
 
 # These classes handle user navigation and lookups.
@@ -452,7 +448,7 @@ class ListsMain:
                 print(style_output(f'List could not be created: "{name}" contains invalid characters. (Only alphanumeric characters and spaces allowed.)\n', 'warning'))
                 self.create_list()
         else: 
-            self.create_list()
+            return self.create_list()
 
 class List:
     '''This class displays a selected reading list & handles relevant actions.'''
@@ -481,11 +477,11 @@ class List:
     def display(self):
         '''Print reading list & menu of relevant actions.'''
         if len(self.booklist) == 0:
-            print(style_output(f'\nThere are no books in "{self.name}".', 'warning'))
+            print(style_output(f'\nThere are currently no books in "{self.name}".', 'warning'))
             options = ['delete_list', 'view_another', 'new_list', 'exit']
             Menu(options, self.options_dict).print() 
         else:
-            print(f'\nShowing books in "{self.name}":\n')
+            print(style_output(f'\nShowing books in "{self.name}":\n', 'underline'))
             display_books(self.booklist)
             options = ['delete_book', 'move_book', 'delete_list', 'view_another', 'new_list', 'exit']
             Menu(options, self.options_dict).print() 
@@ -534,7 +530,7 @@ class List:
             self.menu()
 
     def confirm_delete(self, item):
-        print(f'Are you sure you want to delete "{item}"? This action cannot be undone.')
+        print(style_output(f'\nAre you sure you want to delete "{item}"? This action cannot be undone.', 'warning'))
         confirm = input('Please enter "y" to confirm, or press any other key to cancel:    ')
         if confirm == 'y':
             return True
