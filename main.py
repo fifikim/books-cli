@@ -46,7 +46,7 @@ class File:
                 books.append(Book(book['id'], book['title'], book['author'], book['publisher']))
             return books
 
-    def contains_dupe(self, id):
+    def list_contains_dupe(self, id):
         '''Check for book with duplicate ID in reading list.
 
         :param id: ID of book user attempting to save.
@@ -88,7 +88,7 @@ class File:
         '''
         json_book = json.dumps(book.__dict__, indent=4)
 
-        if self.contains_dupe(book.id):
+        if self.list_contains_dupe(book.id):
             return False
         else:
             with open(self.filename, 'r+') as file:
@@ -97,6 +97,10 @@ class File:
                 file.seek(0)
                 json.dump(file_data, file, indent=4)
             return True
+
+    def list_name_taken(self, name):
+        lists = self.list_all_lists()
+        
     
     def create(self):
         '''Create a new reading list file'''
@@ -110,6 +114,18 @@ class File:
 
     def delete_file(self):
         os.remove(self.filename)
+
+    def list_all_lists(self):
+        '''Return all reading list files as formatted list of names.'''
+        list_names = os.listdir('./lists')
+
+        clean_list = []
+
+        for list in list_names:
+            name = list.split('.')[0].title().replace("_", " ")
+            clean_list.append(name)
+
+        return clean_list
 
 class ApiCall:
     '''This class handles calls to the GoogleBooks API.'''
@@ -398,7 +414,7 @@ class SearchResults:
 class ListsMain:
     '''This class handles navigation from the main Reading Lists page.'''
     def __init__(self):
-        self.lists = list_all_lists()
+        self.lists = File.list_all_lists()
         self.options = ['view', 'new_list', 'exit']
         self.options_dict = {
             'view': ['View a list', self.view_list],
@@ -543,18 +559,6 @@ def style_output(string, style):
         'warning': '\033[1;31m',
     }
     return f"{styles[style]}{string}{reset}"
-
-def list_all_lists():
-    '''Return all reading list files as formatted list of names.'''
-    list_names = os.listdir('./lists')
-
-    clean_list = []
-
-    for list in list_names:
-        name = list.split('.')[0].title().replace("_", " ")
-        clean_list.append(name)
-
-    return clean_list
 
 
 # These functions print headers and the main navigation menus.
