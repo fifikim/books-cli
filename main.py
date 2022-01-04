@@ -149,27 +149,34 @@ class ApiCall:
         '''
         search_query = f'{self.query_dict[self.type]}{self.query}'
         url = f'https://www.googleapis.com/books/v1/volumes?q={search_query}&maxResults=5&startIndex={self.start_index}'
+        # url = f'https://www.googleapis.com/books/v/volumes?q={search_query}&maxResults=5&startIndex={self.start_index}'
 
         try:
-            response = requests.get(url)
-            #TO-DO: make these error messages more user friendly - more detailed, less technical
-            # Print error message if server responds with status other than 2xx 
-            if not response.status_code // 100 == 2:
-                self.display_error(f'Error: Failed to fetch {response}')
+            response = requests.get(url, timeout=5)
 
+            # Print error message if server responds with status other than 200 
+            if not response.status_code // 100 == 2:
+                self.display_error(f'{response.status_code} {response.reason}')
+            
             # Print error message if server responds with zero results
             elif response.json()['totalItems'] == 0:
-                self.display_error('Sorry, your search returned 0 results.')
+                self.display_error('Sorry, your search returned 0 results.', 'no_results')
             else:
                 self.format_search_results(response.json())
 
+        except requests.exceptions.Timeout or requests.exceptions.ReadTimeout or requests.exceptions.ConnectTimeout:
+            self.display_error('Timed Out')
+        except requests.exceptions.ConnectionError:
+            self.display_error(f'Connection Error')
         except requests.exceptions.RequestException as e:
-            # Print error message if a serious problem occurred (timeout, connection error)
-            self.display_error(f'Error: {e}') 
+            self.display_error(f'Exception') 
     
-    def display_error(self, err):    
-
-        print(style_output(err, 'warning'))
+    def display_error(self, err, type=''):    
+        '''Display error returned from server & prompts user to start a new search.'''
+        if type == 'no_results':
+            print(style_output(f'{err}', 'warning'))
+        else:
+            print(style_output(f'Sorry, your search could not be completed. Please try again later or with a different query. (Error: {err})', 'warning'))
         print('\nWould you like to start a new search?')
         confirm = input('Please enter "y" to search or any other key to exit:    ')
         if confirm == 'y':
@@ -532,6 +539,7 @@ class List:
             return True
         return False
 
+
 # These are shared utility functions.
 
 def validate_selection(val, list, start_num=1):
@@ -592,11 +600,12 @@ def list_all_lists():
     '''Return all reading list files as formatted list of names.'''
     list_names = os.listdir('./lists')
     clean_list = []
-    
+
     for list in list_names:
         name = list.split('.')[0].replace("_", " ")
         clean_list.append(name)
     return clean_list
+
 
 # These functions print headers and the main navigation menus.
 
