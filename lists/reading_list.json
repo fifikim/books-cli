@@ -1,7 +1,5 @@
 {
     "books": [
-        "{\n    \"id\": \"6KYsEAAAQBAJ\",\n    \"title\": \"If It Bleeds\",\n    \"author\": \"Stephen King\",\n    \"publisher\": \"Simon and Schuster\"\n}",
-        "{\n    \"id\": \"Z7uwAAAAIAAJ\",\n    \"title\": \"Christine\",\n    \"author\": \"Stephen King\",\n    \"publisher\": \"Viking Adult\"\n}",
         "{\n    \"id\": \"RriuDwAAQBAJ\",\n    \"title\": \"The Institute\",\n    \"author\": \"Stephen King\",\n    \"publisher\": \"Scribner\"\n}",
         "{\n    \"id\": \"S85NCwAAQBAJ\",\n    \"title\": \"It\",\n    \"author\": \"Stephen King\",\n    \"publisher\": \"Simon and Schuster\"\n}"
     ]

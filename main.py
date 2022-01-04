@@ -26,13 +26,8 @@ class Book:
 class File:  
     '''This class handles JSON files.'''
     def __init__(self, name):
-        self.name = f"{name.title().replace('_', ' ')}"
+        self.name = f"{name.replace('_', ' ')}"
         self.filename = f"lists/{name.lower().replace(' ', '_')}.json"   
-
-    def load_to_list(self):
-        '''Loads reading list and creates instance of List object.'''
-        list = self.load()
-        List(self.name, list).display()
 
     def load(self):
         '''Load reading list & format JSON strings as a list of Book instances.'''
@@ -46,19 +41,10 @@ class File:
                 books.append(Book(book['id'], book['title'], book['author'], book['publisher']))
             return books
 
-    def list_contains_dupe(self, id):
-        '''Check for book with duplicate ID in reading list.
-
-        :param id: ID of book user attempting to save.
-        :type id: str
-        :return True if duplicate ID exists; False if not.
-        :rtype: boolean
-        '''
-        books = self.load()
-        for book in books:
-            if book.id == id:
-                return True
-        return False
+    def load_as_list(self):
+        '''Loads reading list from file and then displays associated List.'''
+        list = self.load()
+        List(self.name, list).display()
 
     def delete_record(self, to_delete):
         '''Delete selected book from reading list.
@@ -97,35 +83,46 @@ class File:
                 file.seek(0)
                 json.dump(file_data, file, indent=4)
             return True
-
-    def list_name_taken(self, name):
-        lists = self.list_all_lists()
-        
     
+    def delete_file(self):
+        os.remove(self.filename)
+
     def create(self):
         '''Create a new reading list file'''
         file_data = {}
         file_data['books'] = []
 
+        if self.list_name_taken():
+            return 'duplicate'
+        if self.list_name_invalid():
+            return 'invalid'
+
         with open(self.filename, 'w') as file:
             json.dump(file_data, file, indent=4)
+            return 'success'
+    
+    def list_contains_dupe(self, id):
+        '''Check for book with duplicate ID in reading list.
 
-        print(style_output(f'New list "{self.name}" created.', 'success'))
+        :param id: ID of book user attempting to save.
+        :type id: str
+        :return True if duplicate ID exists; False if not.
+        :rtype: boolean
+        '''
+        books = self.load()
+        for book in books:
+            if book.id == id:
+                return True
+        return False
 
-    def delete_file(self):
-        os.remove(self.filename)
-
-    def list_all_lists(self):
-        '''Return all reading list files as formatted list of names.'''
-        list_names = os.listdir('./lists')
-
-        clean_list = []
-
-        for list in list_names:
-            name = list.split('.')[0].title().replace("_", " ")
-            clean_list.append(name)
-
-        return clean_list
+    def list_name_taken(self):
+        lists = list_all_lists()
+        if self.name in lists:
+            return True
+        return False
+        
+    def list_name_invalid(self):
+        return any(not char.isalnum() for char in self.name)
 
 class ApiCall:
     '''This class handles calls to the GoogleBooks API.'''
@@ -171,6 +168,7 @@ class ApiCall:
             self.display_error(f'Error: {e}') 
     
     def display_error(self, err):    
+
         print(style_output(err, 'warning'))
         print('\nWould you like to start a new search?')
         confirm = input('Please enter "y" to search or any other key to exit:    ')
@@ -317,6 +315,7 @@ class Search:
         self.options = ['Title', 'Author', 'Subject', 'Keyword', 'Cancel search']
 
     def build_query(self):
+
         type = self.get_type()
         term = self.get_term(type)
         ApiCall(type, term).fetch()
@@ -400,9 +399,11 @@ class SearchResults:
         saved_book = File(target_list).save(target_book)
 
         if saved_book:
-            print(style_output(f'Saved to "{target_list}": {repr(target_book)}\n', 'success'))
+            print(style_output(f'Saved to "{target_list}": {repr(target_book)}', 'success'))
+            time.sleep(1)
         else:
             print(style_output(f'Unable to save to "{target_list}": {target_book.title} is already saved to this list.', 'warning'))
+            time.sleep(1)
 
         options = ['prev', 'next', 'another', 'new', 'exit']
         if self.first == 1:
@@ -414,7 +415,7 @@ class SearchResults:
 class ListsMain:
     '''This class handles navigation from the main Reading Lists page.'''
     def __init__(self):
-        self.lists = File.list_all_lists()
+        self.lists = list_all_lists()
         self.options = ['view', 'new_list', 'exit']
         self.options_dict = {
             'view': ['View a list', self.view_list],
@@ -427,16 +428,30 @@ class ListsMain:
         Menu(self.options, self.options_dict).print()
 
     def view_list(self):
-
+        '''Prompt user to select list and then load associated file.'''
         list = SelectTarget(self.lists, 'list', 'view').select_from_list()
-        File(list).load_to_list()
+        File(list).load_as_list()
 
     def create_list(self):
         name = input('Please enter a name for the new list:    ')
         # TO-DO: validate name not already taken - check if name in list_all_lists()
         # TO-DO: validate no special characters that would interfere with filenaming
-        File(name).create()
-        self.menu()
+
+        if name:
+            status = File(name).create() # file.create returns success/fail status message
+
+            if status == 'success':
+                print(style_output(f'New list "{name}" created.', 'success'))
+                time.sleep(1)
+                self.menu()
+            elif status == 'duplicate':
+                print(style_output(f'List could not be created: "{name}" already exists. Please choose another name.\n', 'warning'))
+                self.create_list()
+            elif status == 'invalid':
+                print(style_output(f'List could not be created: "{name}" contains invalid characters. Please choose another name (alphanumeric characters only).\n', 'warning'))
+                self.create_list()
+        else: 
+            self.create_list()
 
 class List:
     '''This class displays a selected reading list & handles relevant actions.'''
@@ -451,19 +466,9 @@ class List:
             'new_list': ['Create a new list', ListsMain().create_list],
             'exit': ['Exit to home', main],
         }
-    
-    def delete_list(self):
-        '''Delete JSON file of selected list'''
-        # add confirm prompt
-        File(self.name).delete_file()
-        print(style_output(f'"{self.name}" deleted.', 'success'))
-
-        options = ['view_another', 'new_list', 'exit']
-        Menu(options, self.options_dict).print()
 
     def display(self):
         '''Print reading list & menu of relevant actions.'''
-
         if len(self.booklist) == 0:
             print(style_output(f'\nThere are no books in "{self.name}".', 'warning'))
             options = ['delete_list', 'view_another', 'new_list', 'exit']
@@ -484,8 +489,8 @@ class List:
             File(self.name).delete_record(target_book)
             print(style_output(f'\nMoved to "{target_list}": {repr(target_book)}', 'success'))
             print(f'Refreshing "{self.name}"...')
-            time.sleep(2)
-            File(self.name).load_to_list()
+            time.sleep(1)
+            File(self.name).load_as_list()
         else:
             print(style_output(f'Unable to move to "{target_list}": {target_book.title} is already saved to this list.', 'warning'))
             options = ['delete_book', 'move_book', 'delete_list', 'view_another', 'new_list', 'exit']
@@ -495,14 +500,37 @@ class List:
         '''Delete a book saved to a reading list.'''
         book = SelectTarget(self.booklist, 'book', 'delete').select_without_list()
 
-        # add confirm prompt
-        File(self.name).delete_record(book)
+        confirmed = self.confirm_delete(book.title)
+        if confirmed:
+            File(self.name).delete_record(book)
+            print(style_output(f'\nDeleted from "{self.name}": {repr(book)}', 'warning'))
+            print(f'Refreshing "{self.name}"...')
+            time.sleep(1)
+            File(self.name).load_as_list()
+        else: 
+            print('Delete cancelled.\n')
+            options = ['delete_book', 'move_book', 'delete_list', 'view_another', 'new_list', 'exit']
+            Menu(options, self.options_dict).print() 
+        
+    def delete_list(self):
+        '''Delete JSON file of selected list'''
+        confirmed = self.confirm_delete(self.name)
+        if confirmed:
+            File(self.name).delete_file()
+            print(style_output(f'List "{self.name}" deleted.', 'warning'))
+            time.sleep(1)
+            ListsMain().menu()
+        else:
+            print('Delete cancelled.\n')
+            Menu(['view_another', 'new_list', 'exit'], self.options_dict).print()
 
-        print(style_output(f'\nDeleted from "{self.name}": {repr(book)}', 'success'))
-        print(f'Refreshing "{self.name}"...')
-        time.sleep(2)
-        File(self.name).load_to_list()
+    def confirm_delete(self, item):
+        print(f'Are you sure you want to delete "{item}"? This action cannot be undone.')
+        confirm = input('Please enter "y" to confirm, or press any other key to cancel:    ')
 
+        if confirm == 'y':
+            return True
+        return False
 
 # These are shared utility functions.
 
@@ -560,6 +588,15 @@ def style_output(string, style):
     }
     return f"{styles[style]}{string}{reset}"
 
+def list_all_lists():
+    '''Return all reading list files as formatted list of names.'''
+    list_names = os.listdir('./lists')
+    clean_list = []
+    
+    for list in list_names:
+        name = list.split('.')[0].replace("_", " ")
+        clean_list.append(name)
+    return clean_list
 
 # These functions print headers and the main navigation menus.
 
