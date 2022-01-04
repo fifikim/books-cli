@@ -22,6 +22,7 @@ Search for books and save selections to a reading list.
   - [Day One](#revision-day-one)
   - [Day Two](#revision-day-two)
   - [Day Three](#revision-day-three)
+  - [Day Four](#revision-day-four)
 - [Process: Inital Submission](#initial-sub)
   - [Day One](#day-one)
   - [Day Two](#day-two)
@@ -196,7 +197,6 @@ The following are my responses to the questions posed by my reviewer, as well my
 - Goals:
   - Continue implementing additional features.
   - Clean up new code & look for ways to minimize duplication. I think I need to look at how my Menu classes are structured bc this is where a lot of the messiness currently originates. Probably need to break up the PageMenu class into different Menu classes that manage each page's respective actions.
-  - Begin testing new features & creating mocks to test API calls.
 
 -Wins:
   - ✅  I completely refactored my and restructured my classes to make sure relevant methods are grouped together and have access to the data that they need. Looks much tidier to me.
@@ -204,6 +204,12 @@ The following are my responses to the questions posed by my reviewer, as well my
 
 -Blockers:
   - ⏳ It took me all day to complete this refactor... it felt like every time I made a change to how one of part of my code was structured, every other part of my app broke. This demonstrated to me the fact that the new features I added were not decoupled enough.
+
+### Revision - Day Four <a name = "revision - day-four"></a>
+- Goals:
+  - Finish debugging additional features.
+  - Begin testing new features & creating mocks to test API calls.
+  - Realized that my API error messages are not very user-friendly. Want to replace these with more detailed, less technical messages.
 
 ## Process: Initial Submission (First Round) <a name = "intial-sub"></a>
 

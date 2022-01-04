@@ -2,6 +2,7 @@ import json
 import requests
 import math
 import os
+import time
 
 # These classes fetch and store data.
 
@@ -138,7 +139,7 @@ class ApiCall:
 
         try:
             response = requests.get(url)
-
+            #TO-DO: make these error messages more user friendly - more detailed, less technical
             # Print error message if server responds with status other than 2xx 
             if not response.status_code // 100 == 2:
                 self.display_error(f'Error: Failed to fetch {response}')
@@ -155,7 +156,12 @@ class ApiCall:
     
     def display_error(self, err):    
         print(style_output(err, 'warning'))
-        Menu(['new', 'exit']).print()
+        print('\nWould you like to start a new search?')
+        confirm = input('Please enter "y" to search or any other key to exit:    ')
+        if confirm == 'y':
+            Search().build_query()
+        else:
+            main()
 
     def format_search_results(self, data):
         '''Extract relevant information from API response data & save items as Book instances.
@@ -187,7 +193,7 @@ class ApiCall:
 
 
 # These classes render headings and menus. 
-
+#TO-DO: check for uniform spacing around menus
 class Header:
     '''This class generates decorative page headers.'''
     def __init__(self, name):
@@ -203,7 +209,7 @@ class Header:
         print(f" {style_output(border2, 'border')}")
         print(f'={margin}{heading}{margin}=')
         print(f" {style_output(border2, 'border')}")
-        print(f'   {border}\n\n')
+        print(f'   {border}\n')
 
 class Menu:
     '''This class generates menus that allow user to select from available actions.'''
@@ -213,7 +219,7 @@ class Menu:
 
     def print(self):
         '''Print available options for current view.'''
-        print(style_output('\nWhat would you like to do?', 'underline'))
+        print(style_output('\n\nWhat would you like to do?', 'underline'))
         for (i, element) in enumerate(self.options, start=1):
             label = self.options_dict[element][0]
             id = style_output(i, 'header')
@@ -242,6 +248,9 @@ class SelectTarget:
         self.action = action
         self.start_num = start_num
 
+    # TO-DO: invalid selections are breaking this fn, but not select_without_list - why??
+    # try: either make separate fn to display options and then use select w.o list
+    # or make menu class take optional message param & use that for selections
     def select_from_list(self):
         '''Print list of available targets and prompt user to select one option.'''
         self.show_list()
@@ -271,14 +280,16 @@ class SelectTarget:
     def select_without_list(self):
         '''Prompt user for selection when options have already been printed.'''
         num = input(f'Please enter the ID of the {self.item} you would like to {self.action}:  ')
-        valid = validate_selection(num, self.list)
+        valid = validate_selection(num, self.list, self.start_num)
 
         if valid:
-            selected = self.list[int(num) - 1]
+            index = int(num) - int(self.start_num)
+            selected = self.list[index]
             return selected
         else:
+            end_num = int(self.start_num) + len(self.list) - 1
             print(style_output(
-                f'Invalid selection. Please choose from Options #1-{len(self.list)}.\n', 'warning'))
+                f'Invalid selection. Please choose from IDs #{self.start_num} - {end_num}.\n', 'warning'))
             self.select_without_list()
 
 
@@ -287,7 +298,7 @@ class SelectTarget:
 class Search:
     '''This class performs a new search.'''
     def __init__(self):
-        self.options = ['Title', 'Author', 'Subject', 'Keyword', 'Cancel search and exit to home']
+        self.options = ['Title', 'Author', 'Subject', 'Keyword', 'Cancel search']
 
     def build_query(self):
         type = self.get_type()
@@ -375,7 +386,7 @@ class SearchResults:
         if saved_book:
             print(style_output(f'Saved to "{target_list}": {repr(target_book)}\n', 'success'))
         else:
-            print(style_output(f'Unable to save to "{target_list}": \n{target_book.title} is already saved to this list.\n', 'warning'))
+            print(style_output(f'Unable to save to "{target_list}": {target_book.title} is already saved to this list.', 'warning'))
 
         options = ['prev', 'next', 'another', 'new', 'exit']
         if self.first == 1:
@@ -396,15 +407,17 @@ class ListsMain:
         }
 
     def menu(self):
+        '''Print Reading Lists menu.'''
         Menu(self.options, self.options_dict).print()
 
     def view_list(self):
+
         list = SelectTarget(self.lists, 'list', 'view').select_from_list()
         File(list).load_to_list()
 
     def create_list(self):
         name = input('Please enter a name for the new list:    ')
-        # TO-DO: validate name not already taken
+        # TO-DO: validate name not already taken - check if name in list_all_lists()
         # TO-DO: validate no special characters that would interfere with filenaming
         File(name).create()
         self.menu()
@@ -436,7 +449,7 @@ class List:
         '''Print reading list & menu of relevant actions.'''
 
         if len(self.booklist) == 0:
-            print(style_output(f'There are no books in "{self.name}".', 'warning'))
+            print(style_output(f'\nThere are no books in "{self.name}".', 'warning'))
             options = ['delete_list', 'view_another', 'new_list', 'exit']
             Menu(options, self.options_dict).print() 
         else:
@@ -450,13 +463,17 @@ class List:
         target_book = SelectTarget(self.booklist, 'book', 'move').select_without_list()
         target_list = SelectTarget(ListsMain().lists, 'list', 'move to').select_from_list()
 
-        File(self.name).delete_record(target_book)
-        File(target_list).save(target_book)
-
-        print(style_output(f'\nMoved to "{target_list}": {repr(target_book)}', 'success'))
-        print(f'Refreshing "{self.name}"...')
-        # add a pause before refresh
-        File(self.name).load_to_list()
+        saved_book = File(target_list).save(target_book)
+        if saved_book:
+            File(self.name).delete_record(target_book)
+            print(style_output(f'\nMoved to "{target_list}": {repr(target_book)}', 'success'))
+            print(f'Refreshing "{self.name}"...')
+            time.sleep(2)
+            File(self.name).load_to_list()
+        else:
+            print(style_output(f'Unable to move to "{target_list}": {target_book.title} is already saved to this list.', 'warning'))
+            options = ['delete_book', 'move_book', 'delete_list', 'view_another', 'new_list', 'exit']
+            Menu(options, self.options_dict).print() 
 
     def delete_book(self):
         '''Delete a book saved to a reading list.'''
@@ -465,9 +482,9 @@ class List:
         # add confirm prompt
         File(self.name).delete_record(book)
 
-        print(style_output(f'\nDeleted from "{self.booklist}": {repr(target_book)}', 'success'))
+        print(style_output(f'\nDeleted from "{self.name}": {repr(book)}', 'success'))
         print(f'Refreshing "{self.name}"...')
-        # add a pause before refresh
+        time.sleep(2)
         File(self.name).load_to_list()
 
 
@@ -560,7 +577,7 @@ def quit_landing():
 def main():
     '''Displays homepage header & menu.'''
     Header('home').print()
-    print(style_output('      Welcome to Books on 8th!', 'header'))
+    print(style_output('\n      Welcome to Books on 8th!', 'header'))
     options = ['search', 'list', 'quit']
     options_dict = {
             'search': ['Search for books', search_landing],
