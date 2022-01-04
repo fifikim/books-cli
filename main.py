@@ -3,7 +3,7 @@ import requests
 import math
 import os
 import time
-
+import re
 
 # These classes fetch and store data.
 
@@ -123,7 +123,7 @@ class File:
         return False
         
     def list_name_invalid(self):
-        return any(not char.isalnum() for char in self.name)
+        return bool(re.search('[^a-zA-Z0-9\s]+$', self.name))
 
 class ApiCall:
     '''This class handles calls to the GoogleBooks API.'''
@@ -437,7 +437,7 @@ class ListsMain:
         File(list).load_as_list()
 
     def create_list(self):
-        name = input('Please enter a name for the new list:    ')
+        name = input('Please enter a name for the new list:    ').strip()
         if name:
             status = File(name).create()
 
@@ -446,10 +446,10 @@ class ListsMain:
                 time.sleep(1)
                 self.menu()
             elif status == 'duplicate':
-                print(style_output(f'List could not be created: "{name}" already exists. Please choose another name.\n', 'warning'))
+                print(style_output(f'List could not be created: "{name}" already exists.\n', 'warning'))
                 self.create_list()
             elif status == 'invalid':
-                print(style_output(f'List could not be created: "{name}" contains invalid characters. Please choose another name (alphanumeric characters only).\n', 'warning'))
+                print(style_output(f'List could not be created: "{name}" contains invalid characters. (Only alphanumeric characters and spaces allowed.)\n', 'warning'))
                 self.create_list()
         else: 
             self.create_list()
