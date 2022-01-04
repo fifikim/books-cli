@@ -287,6 +287,7 @@ class SelectTarget:
         print('\n')    
     
     def prompt(self):
+        #pass in list
         '''Prompt user to select from list shown.'''
         num = input('Please enter your selection:  ')
         valid = validate_selection(num, self.list, self.start_num)
@@ -357,13 +358,21 @@ class SearchResults:
         self.first = int(self.start_index) + 1
         self.last = self.first + len(self.results) - 1
         self.options_dict = {
-            'next': ['Show next 5 results', self.next],
             'prev': ['Show previous 5 results', self.prev],
-            'new': ['Start a new search', Search().build_query],
+            'next': ['Show next 5 results', self.next],
             'save': ['Save a book to my reading lists', self.save],
-            'another': ['Save another book to my reading lists', self.save],
+            'new': ['Start a new search', Search().build_query],
             'exit': ['Exit to home', main],
         }
+
+    def menu(self):
+        '''Generate menu options depending on search results.'''
+        options = ['prev', 'next', 'save', 'new', 'exit']
+        if self.first == 1:
+            options.remove('prev')
+        if self.last == self.total:
+            options.remove('next')
+        Menu(options, self.options_dict).print()
 
     def next(self):
         '''Fetch next page of search results.'''
@@ -387,13 +396,7 @@ class SearchResults:
         else:
             print(style_output(f'\nShowing {self.first} - {self.last} of {self.total} results matching {self.type}: "{self.query}"\n', 'underline'))
         display_books(self.results, self.first)
-
-        options = ['prev', 'next', 'save', 'new', 'exit']
-        if self.first == 1:
-            options.remove('prev')
-        if self.last == self.total:
-            options.remove('next')
-        Menu(options, self.options_dict).print()
+        self.menu()
 
     def save(self):
         '''Save selected book to reading list.
@@ -403,22 +406,15 @@ class SearchResults:
         '''
         target_book = SelectTarget(self.results, 'book', 'save', self.first).select_without_list()
         target_list = SelectTarget(ListsMain().lists, 'list', 'save to').select_from_list()
-
         saved_book = File(target_list).save(target_book)
-
+        
         if saved_book:
             print(style_output(f'Saved to "{target_list}": {repr(target_book)}', 'success'))
             time.sleep(1)
         else:
             print(style_output(f'Unable to save to "{target_list}": {target_book.title} is already saved to this list.', 'warning'))
             time.sleep(1)
-
-        options = ['prev', 'next', 'another', 'new', 'exit']
-        if self.first == 1:
-            options.remove('prev')
-        if self.last == self.total:
-            options.remove('next')
-        Menu(options, self.options_dict).print()
+        self.menu()
 
 class ListsMain:
     '''This class handles navigation from the main Reading Lists page.'''
@@ -437,16 +433,13 @@ class ListsMain:
 
     def view_list(self):
         '''Prompt user to select list and then load associated file.'''
-        list = SelectTarget(self.lists, 'list', 'view').select_from_list()
+        list = SelectTarget(list_all_lists(), 'list', 'view').select_from_list()
         File(list).load_as_list()
 
     def create_list(self):
         name = input('Please enter a name for the new list:    ')
-        # TO-DO: validate name not already taken - check if name in list_all_lists()
-        # TO-DO: validate no special characters that would interfere with filenaming
-
         if name:
-            status = File(name).create() # file.create returns success/fail status message
+            status = File(name).create()
 
             if status == 'success':
                 print(style_output(f'New list "{name}" created.', 'success'))
