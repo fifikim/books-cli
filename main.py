@@ -4,6 +4,7 @@ import math
 import os
 import time
 
+
 # These classes fetch and store data.
 
 class Book:
@@ -141,29 +142,29 @@ class ApiCall:
         '''Submit API get request & return response.
                 
         If server responds with status code not in 200 range: prints error message 
-        with specific error code. If requests module raises exception, returns message 
-        with exception. If search returns no results, returns notification.
+        with specific status code and type. If requests module raises exception, returns message 
+        with type if exception is connection error or timeout. If search returns no results, returns notification.
                  
         :return: Prints search results or error message, and menu with available options. 
         :rtype: str
         '''
         search_query = f'{self.query_dict[self.type]}{self.query}'
         url = f'https://www.googleapis.com/books/v1/volumes?q={search_query}&maxResults=5&startIndex={self.start_index}'
-        # url = f'https://www.googleapis.com/books/v/volumes?q={search_query}&maxResults=5&startIndex={self.start_index}'
 
         try:
             response = requests.get(url, timeout=5)
 
-            # Print error message if server responds with status other than 200 
+            # Print error message if server responds with status other than 200 .
             if not response.status_code // 100 == 2:
                 self.display_error(f'{response.status_code} {response.reason}')
             
-            # Print error message if server responds with zero results
+            # Print error message if server responds with zero results.
             elif response.json()['totalItems'] == 0:
                 self.display_error('Sorry, your search returned 0 results.', 'no_results')
             else:
                 self.format_search_results(response.json())
 
+        # Print error message if requests raises exception. Give type if timeout or connection error.
         except requests.exceptions.Timeout or requests.exceptions.ReadTimeout or requests.exceptions.ConnectTimeout:
             self.display_error('Timed Out')
         except requests.exceptions.ConnectionError:
@@ -474,6 +475,16 @@ class List:
             'exit': ['Exit to home', main],
         }
 
+    def menu(self):
+        options = ['delete_book', 'move_book', 'delete_list', 'view_another', 'new_list', 'exit']
+        if self.name == 'Reading List':
+            options.remove('delete_list')
+        if not self.booklist:
+            options.remove('move_book')
+            options.remove('delete_book')
+        
+        Menu(options, self.options_dict).print()
+
     def display(self):
         '''Print reading list & menu of relevant actions.'''
         if len(self.booklist) == 0:
@@ -506,7 +517,6 @@ class List:
     def delete_book(self):
         '''Delete a book saved to a reading list.'''
         book = SelectTarget(self.booklist, 'book', 'delete').select_without_list()
-
         confirmed = self.confirm_delete(book.title)
         if confirmed:
             File(self.name).delete_record(book)
@@ -516,8 +526,7 @@ class List:
             File(self.name).load_as_list()
         else: 
             print('Delete cancelled.\n')
-            options = ['delete_book', 'move_book', 'delete_list', 'view_another', 'new_list', 'exit']
-            Menu(options, self.options_dict).print() 
+            self.menu()
         
     def delete_list(self):
         '''Delete JSON file of selected list'''
@@ -529,12 +538,11 @@ class List:
             ListsMain().menu()
         else:
             print('Delete cancelled.\n')
-            Menu(['view_another', 'new_list', 'exit'], self.options_dict).print()
+            self.menu()
 
     def confirm_delete(self, item):
         print(f'Are you sure you want to delete "{item}"? This action cannot be undone.')
         confirm = input('Please enter "y" to confirm, or press any other key to cancel:    ')
-
         if confirm == 'y':
             return True
         return False
