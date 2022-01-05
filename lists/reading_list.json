@@ -1,6 +1,9 @@
 {
     "books": [
-        "{\n    \"id\": \"RriuDwAAQBAJ\",\n    \"title\": \"The Institute\",\n    \"author\": \"Stephen King\",\n    \"publisher\": \"Scribner\"\n}",
-        "{\n    \"id\": \"S85NCwAAQBAJ\",\n    \"title\": \"It\",\n    \"author\": \"Stephen King\",\n    \"publisher\": \"Simon and Schuster\"\n}"
+        "{\n    \"id\": \"2CgvDwAAQBAJ\",\n    \"title\": \"Test-Driven Development with Python\",\n    \"author\": \"Harry Percival\",\n    \"publisher\": \"\\\"O'Reilly Media, Inc.\\\"\"\n}",
+        "{\n    \"id\": \"B7uWzgEACAAJ\",\n    \"title\": \"Unit Testing in Python\",\n    \"author\": \"Jasmine Omeke\",\n    \"publisher\": \"\"\n}",
+        "{\n    \"id\": \"tTkzEAAAQBAJ\",\n    \"title\": \"The Art of Unit Testing\",\n    \"author\": \"Roy Osherove\",\n    \"publisher\": \"Simon and Schuster\"\n}",
+        "{\n    \"id\": \"YvCH1qSnqVkC\",\n    \"title\": \"Python Testing\",\n    \"author\": \"Daniel Arbuckle\",\n    \"publisher\": \"Packt Publishing Ltd\"\n}",
+        "{\n    \"id\": \"CiVVygEACAAJ\",\n    \"title\": \"Unit Testing and Test Driven Development in Python\",\n    \"author\": \"\",\n    \"publisher\": \"\"\n}"
     ]
 }

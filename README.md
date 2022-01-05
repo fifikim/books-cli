@@ -13,8 +13,6 @@ Search for books and save selections to a reading list.
 
 ## Table of Contents
 
----
-
 - [Getting Started](#getting_started)
 - [Testing](#testing)
 - [Usage](#usage)
@@ -34,8 +32,6 @@ Search for books and save selections to a reading list.
 <br><br>
 
 ## Getting Started <a name = "getting_started"></a>
-
----
 
 ### Installing 
 
@@ -58,8 +54,6 @@ pipenv run python main.py
 
 ## Testing <a name = "testing"></a>
 
----
-
 Run tests:
 ```
 pipenv run python tests.py
@@ -68,8 +62,6 @@ pipenv run python tests.py
 
 
 ## Usage <a name="usage"></a>
-
----
 
 ### Features
 - Search for books and receive up to 5 matching results at a time. 
@@ -96,8 +88,6 @@ pipenv run python tests.py
 
 
 ## Process: Revision (Second Round) <a name = "revision"></a>
-
----
 
 The following are my responses to the questions posed by my reviewer, as well my plan for how I'll proceed.
 
@@ -136,8 +126,8 @@ The following are my responses to the questions posed by my reviewer, as well my
   - My response: The ability to delete entries from the reading list was one I thought would be useful, too! As I was testing my app, I kept coming up with features that I would want to implement and I had to keep reminding myself that I wasn't permitted to add extra features in my initial submission. <br>
   - Plan: I don't know yet how many of these I'll be able to complete given time constraints, but below is a list of features I'd like to add, grouped by page:
     - Home:
-      - Log in / log out 
-      - Create a new account
+      - ~~Log in / log out~~ 
+      - ~~Create a new account~~ -> decided multiple user accounts weren't necessary since all data is saved to a local machine. 
     - Search:
       - ✅ View more results
       - ✅ Specify type of search (author, title, subject, keyword)
@@ -147,10 +137,10 @@ The following are my responses to the questions posed by my reviewer, as well my
       - ✅ Delete an existing list
       - ✅ Delete an item in a list
       - ✅ Prevent user from saving duplicate items (Add ID property to book class)
-      - Mark item as read
-      - Show list of read items
+      - Mark item as read -> 
+      - Show list of read items -> 
     - Quit:
-      - Confirm quit
+      - ~~Confirm quit~~ -> implemented this, then decided I preferred UX without
 
 ### 6. Commits:
 
@@ -211,9 +201,16 @@ The following are my responses to the questions posed by my reviewer, as well my
   - Begin testing new features & creating mocks to test API calls.
   - Realized that my API error messages are not very user-friendly. Want to replace these with more detailed, less technical messages.
 
-## Process: Initial Submission (First Round) <a name = "intial-sub"></a>
+  - ✅ Debugging complete. Fixed a bug that had been bothering me since yesterday (selection menu was using a recursive call to prompt user for new selection if invalid selection was entered -- I needed to return the recursive call in order to pass the input after an unsuccessful input was entered.)
+  - ✅ Happy with the amount of new features. Decided it wasn't important to add additional accounts since all data is being saved to a local machine. 
+  - ✅ Added more validation to prevent bad user inputs in new features & to auto-generate menu options depending on contents of lists/search resutls.
+  - ✅ 
 
----
+
+-Blockers:
+  - ⏳ It took me all day to complete this refactor... it felt like every time I made a change to how one of part of my code was structured, every other part of my app broke. This demonstrated to me the fact that the new features I added were not decoupled enough.
+
+## Process: Initial Submission (First Round) <a name = "intial-sub"></a>
 
 I decided to build this app in my weaker language of the two that I practice so far. I've just graduated a bootcamp concentrating on JavaScript & JS frameworks, so I thought this would be a great opportunity to refresh my novice/rusty Python skills and demonstrate my range as a developer.
 
@@ -288,9 +285,6 @@ Before I got started, I spent half a day researching approaches to building Pyth
 
 ## Future Implementation <a name = "future"></a>
 
----
-
-- 
 - Create additional tests to ensure print() and output() functions are working correctly
 
 <br><br>
@@ -298,21 +292,20 @@ Before I got started, I spent half a day researching approaches to building Pyth
 
 ## Author <a name = "author"></a>
 
----
-
 Sophia Kim <br/>
 mail@fifikim.com <br/>
+<a href="https://www.fifikim.com">Portfolio</a> 
 <a href="https://www.linkedin.com/in/fifikim">LinkedIn</a> 
 <br><br>
 
 
 ## Acknowledgements <a name = "acknowledgements"></a>
 
----
-
 Books and online references:
 - Clean Python, Sunil Kapil, Apress
 - Python Cookbook, David Beazley & Brian K. Jones, O'Reilly
+- <a href='https://realpython.com/python-mock-library/'>Understanding the Python Mocking Library</a>
+- <a href='https://realpython.com/testing-third-party-apis-with-mocks/'>Mocking External APIs</a>
 - <a href='https://docs.python.org/3/library/unittest.html'>Unittest</a>
 - <a href='https://www.codecademy.com/courses/learn-intermediate-python-3/lessons/int-python-unit-testing/'>More on Testing</a> (subscription required)
 - <a href='https://stackabuse.com/how-to-print-colored-text-in-python/'>Coloring terminal output</a>

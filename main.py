@@ -5,7 +5,7 @@ import os
 import time
 import re
 
-# These classes fetch and store data.
+# These classes store data.
 
 class Book:
     '''This class handles book items.'''
@@ -28,7 +28,7 @@ class File:
     '''This class handles JSON files.'''
     def __init__(self, name):
         self.name = f"{name.replace('_', ' ').title()}"
-        self.filename = f"lists/{name.lower().replace(' ', '_')}.json"   
+        self.filename = f"lists/{name.replace(' ', '_')}.json"   
 
     def load(self):
         '''Load reading list & format JSON strings as a list of Book instances.'''
@@ -125,113 +125,8 @@ class File:
     def list_name_invalid(self):
         return bool(re.search('[^a-zA-Z0-9\s]+$', self.name))
 
-class ApiCall:
-    '''This class handles calls to the GoogleBooks API.'''
-    def __init__(self, type, query, start_index=0):
-        self.type = type
-        self.query = query
-        self.start_index = start_index
-        self.query_dict = {
-            'Title': '+intitle:',
-            'Author': '+inauthor:',
-            'Subject': '+subject:',
-            'Keyword': ''
-        }
 
-    def fetch(self):
-        '''Submit API get request & return response.
-                
-        If server responds with status code not in 200 range: prints error message 
-        with specific status code and type. If requests module raises exception, returns message 
-        with type if exception is connection error or timeout. If search returns no results, returns notification.
-                 
-        :return: Prints search results or error message, and menu with available options. 
-        :rtype: str
-        '''
-        search_query = f'{self.query_dict[self.type]}{self.query}'
-        url = f'https://www.googleapis.com/books/v1/volumes?q={search_query}&maxResults=5&startIndex={self.start_index}'
-
-        try:
-            response = requests.get(url, timeout=5)
-
-            # Print error message if server responds with status other than 200 .
-            if not response.status_code // 100 == 2:
-                self.display_error(f'{response.status_code} {response.reason}')
-            
-            # Print error message if server responds with zero results.
-            elif response.json()['totalItems'] == 0:
-                self.display_error('Sorry, your search returned 0 results.', 'no_results')
-            else:
-                self.format_search_results(response.json())
-
-        # Print error message if requests raises exception. Give type if timeout or connection error.
-        except requests.exceptions.Timeout or requests.exceptions.ReadTimeout or requests.exceptions.ConnectTimeout:
-            self.display_error('Timed Out')
-        except requests.exceptions.ConnectionError:
-            self.display_error(f'Connection Error')
-        except requests.exceptions.RequestException as e:
-            self.display_error(f'Exception') 
-    
-    def display_error(self, err, type=''):    
-        '''Display error returned from server & prompts user to start a new search.'''
-        if type == 'no_results':
-            print(style_output(f'{err}', 'warning'))
-        else:
-            print(style_output(f'Sorry, your search could not be completed. Please try again later or with a different query. (Error: {err})', 'warning'))
-        print('\nWould you like to start a new search?')
-        confirm = input('Please enter "y" to search or any other key to exit:    ')
-        if confirm == 'y':
-            Search().build_query()
-        else:
-            main()
-
-    def format_search_results(self, data):
-        '''Extract relevant information from API response data & save items as Book instances.
-                
-        :param data: Server response body formatted as JSON object.
-        :type data: 
-        :return: List of Book objects representing search results.
-        :rtype: list
-        '''
-        total = data['totalItems']
-        results = []
-        for item in data['items']:
-            id = item['id']
-            if 'title' not in item['volumeInfo']:
-                title = ''
-            else:
-                title = item['volumeInfo']['title']
-            if 'authors' not in item['volumeInfo']:
-                author = ''
-            else:
-                author = ', '.join(item['volumeInfo']['authors'])
-            if 'publisher' not in item['volumeInfo']:
-                publisher = ''
-            else:
-                publisher = item['volumeInfo']['publisher']
-            result = Book(id, title, author, publisher)
-            results.append(result)
-        return SearchResults(results, total, self.type, self.query, self.start_index).display_results()
-
-
-# These classes render headings and menus. 
-#TO-DO: check for uniform spacing around menus
-class Header:
-    '''This class generates decorative page headers.'''
-    def __init__(self, name):
-        self.name = name.upper()
-
-    def print(self):
-        '''Print page header for current view.'''
-        margin = math.floor((35 - len(self.name)) / 2) * ' '
-        border = '=' * 30
-        border2 = '=' * 34
-        heading = style_output(self.name, 'header')
-        print(f'\n\n   {border}')
-        print(f" {style_output(border2, 'border')}")
-        print(f'={margin}{heading}{margin}=')
-        print(f" {style_output(border2, 'border')}")
-        print(f'   {border}\n')
+# These classes render menus. 
 
 class Menu:
     '''This class generates menus that allow user to select from available actions.'''
@@ -318,12 +213,18 @@ class Search:
     '''This class performs a new search.'''
     def __init__(self):
         self.options = ['Title', 'Author', 'Subject', 'Keyword', 'Cancel search']
+        self.query_dict = {
+            'Title': '+intitle:',
+            'Author': '+inauthor:',
+            'Subject': '+subject:',
+            'Keyword': ''
+        }
 
     def build_query(self):
-
+        '''This builds a search query based on user inputs.'''
         type = self.get_type()
-        term = self.get_term(type)
-        ApiCall(type, term).fetch()
+        term = self.get_term(type) 
+        self.fetch(type, term)
 
     def get_type(self):
         '''Prompt user to select a type of search.'''
@@ -342,6 +243,92 @@ class Search:
             self.get_term(type)
         else:
             return term
+
+    def fetch(self, type, term, start_index=0):
+        '''Submit API get request & return response.
+                
+        If server responds with status code not in 200 range: prints error message 
+        with specific status code and type. If requests module raises exception, returns message 
+        with type if exception is connection error or timeout. If search returns no results, returns notification.
+                 
+        :return: Displays search results or error message with prompt to search again. 
+        :rtype: str
+        '''
+        search_query = f'{self.query_dict[type]}{term}'
+        url = f'https://www.googleapis.com/books/v1/volumes?q={search_query}&maxResults=5&startIndex={start_index}'
+
+        response = self.get_response(url)
+
+        if response in ['Time Out', 'Connection Error', 'HTTP Error', 'Exception']:
+            self.display_error('Exception') 
+        
+        if response.status_code:
+            if response.status_code == 200:
+                if response.json()['totalItems'] == 0:
+                    self.display_error('Sorry, your search returned 0 results.', 'no_results')
+                    self.search_again()
+                else: 
+                    [results, total] = self.format_search_results(response.json())
+                    SearchResults(results, total, type, term, start_index).display_results()
+            else:
+                self.display_error(f'{response.status_code} {response.reason}')
+                self.search_again()
+
+    def get_response(self, url):
+        try:
+            response = requests.get(url)
+            return response
+        except requests.exceptions.Timeout or requests.exceptions.ReadTimeout or requests.exceptions.ConnectTimeout:
+            return 'Time Out'
+        except requests.exceptions.HTTPError:
+            return 'HTTP Error'
+        except requests.exceptions.ConnectionError:
+            return 'Connection Error'
+        except requests.exceptions.RequestException:
+            return 'Exception' 
+
+    def display_error(self, err, type=''):    
+        '''Display error returned from server.'''
+        if type == 'no_results':
+            print(style_output(f'{err}', 'warning'))
+        else:
+            print(style_output(f'Sorry, your search could not be completed. Please try again later or with a different query. (Error: {err})', 'warning'))
+        
+    def search_again(self):
+        print('\nWould you like to start a new search?')
+        confirm = input('Please enter "y" to search or any other key to exit:  ')
+        if confirm == 'y':
+            Search().build_query()
+        else:
+            main()
+
+    def format_search_results(self, data):
+        '''Extract relevant information from API response data & save items as Book instances.
+                
+        :param data: Server response body formatted as JSON object.
+        :type data: 
+        :return: List of Book objects representing search results.
+        :rtype: list
+        '''
+        total = data['totalItems']
+        results = []
+        for item in data['items']:
+            id = item['id']
+            if 'title' not in item['volumeInfo']:
+                title = ''
+            else:
+                title = item['volumeInfo']['title']
+            if 'authors' not in item['volumeInfo']:
+                author = ''
+            else:
+                author = ', '.join(item['volumeInfo']['authors'])
+            if 'publisher' not in item['volumeInfo']:
+                publisher = ''
+            else:
+                publisher = item['volumeInfo']['publisher']
+            result = Book(id, title, author, publisher)
+            results.append(result)
+        return [results, total]
 
 class SearchResults:
     '''This class displays search results & handles relevant actions.'''
@@ -372,12 +359,12 @@ class SearchResults:
 
     def next(self):
         '''Fetch next page of search results.'''
-        ApiCall(self.type, self.query, self.last).fetch()
+        Search().fetch(self.type, self.query, self.last)
     
     def prev(self):
         '''Fetch previous page of search results.'''
         new_start = int(self.start_index) - 5
-        ApiCall(self.type, self.query, new_start).fetch()
+        Search().fetch(self.type, self.query, new_start)
     
     def display_results(self):
         '''Print formatted search results & new menu options.
@@ -387,6 +374,7 @@ class SearchResults:
         :return: Prints search results and menu with available options. 
         :rtype: str
         '''
+        print_header('search results')
         if len(self.results) == 1:
             print(style_output(f'\nShowing 1 result matching {self.type.lower()}: "{self.query}"\n', 'underline'))
         else:
@@ -433,7 +421,7 @@ class ListsMain:
         File(list).load_as_list()
 
     def create_list(self):
-        name = input('Please enter a name for the new list:    ').strip()
+        name = input('Please enter a name for the new list:  ').strip()
         if name:
             status = File(name).create()
 
@@ -466,7 +454,7 @@ class List:
 
     def menu(self):
         options = ['delete_book', 'move_book', 'delete_list', 'view_another', 'new_list', 'exit']
-        if self.name == 'Reading List':
+        if self.name == 'reading list':
             options.remove('delete_list')
         if not self.booklist:
             options.remove('move_book')
@@ -476,6 +464,7 @@ class List:
 
     def display(self):
         '''Print reading list & menu of relevant actions.'''
+        print_header(self.name)
         if len(self.booklist) == 0:
             print(style_output(f'\nThere are currently no books in "{self.name}".', 'warning'))
             options = ['delete_list', 'view_another', 'new_list', 'exit']
@@ -509,12 +498,12 @@ class List:
         confirmed = self.confirm_delete(book.title)
         if confirmed:
             File(self.name).delete_record(book)
-            print(style_output(f'\nDeleted from "{self.name}": {repr(book)}', 'warning'))
+            print(style_output(f'\nDeleted from "{self.name}": {repr(book)}', 'success'))
             print(f'Refreshing "{self.name}"...')
             time.sleep(1)
             File(self.name).load_as_list()
         else: 
-            print('Delete cancelled.\n')
+            print('Delete cancelled.')
             self.menu()
         
     def delete_list(self):
@@ -522,22 +511,35 @@ class List:
         confirmed = self.confirm_delete(self.name)
         if confirmed:
             File(self.name).delete_file()
-            print(style_output(f'List "{self.name}" deleted.', 'warning'))
+            print(style_output(f'List "{self.name}" deleted.', 'success'))
             time.sleep(1)
             ListsMain().menu()
         else:
-            print('Delete cancelled.\n')
+            print('Delete cancelled.')
             self.menu()
 
     def confirm_delete(self, item):
+        '''Prompt user to confirm deletion of a book or list.'''
         print(style_output(f'\nAre you sure you want to delete "{item}"? This action cannot be undone.', 'warning'))
-        confirm = input('Please enter "y" to confirm, or press any other key to cancel:    ')
+        confirm = input('Please enter "y" to confirm, or press any other key to cancel:  ')
         if confirm == 'y':
             return True
         return False
 
 
 # These are shared utility functions.
+
+def print_header(name):
+    '''Print decorative page header for current view.'''
+    margin = math.floor((35 - len(name)) / 2) * ' '
+    border = '=' * 30
+    border2 = '=' * 34
+    heading = style_output(name.upper(), 'header')
+    print(f'\n\n   {border}')
+    print(f" {style_output(border2, 'border')}")
+    print(f'={margin}{heading}{margin}=')
+    print(f" {style_output(border2, 'border')}")
+    print(f'   {border}\n')
 
 def validate_selection(val, list, start_num=1):
     '''Validate that a user selection is an available menu option.
@@ -608,22 +610,22 @@ def list_all_lists():
 
 def search_landing():
     '''Display search header & user_selections user for query.'''
-    Header('search').print()
+    print_header('search')
     Search().build_query()
 
 def lists_landing():
     '''Display reading list header & print saved books.'''
-    Header('my reading lists').print()
+    print_header('my reading lists')
     ListsMain().menu()
 
 def quit_landing():
     '''Displays quit header & goodbye message.'''
-    Header('quit').print()
+    print_header('quit')
     print(style_output('\nThanks for using Books on 8th! Goodbye.\n', 'success'))
 
 def main():
     '''Displays homepage header & menu.'''
-    Header('home').print()
+    print_header('home')
     print(style_output('\n      Welcome to Books on 8th!', 'header'))
     options = ['search', 'list', 'quit']
     options_dict = {
