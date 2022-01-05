@@ -86,6 +86,7 @@ class File:
             return True
     
     def delete_file(self):
+        '''Delete file from ./lists directory.'''
         os.remove(self.filename)
 
     def create(self):
@@ -117,12 +118,20 @@ class File:
         return False
 
     def list_name_taken(self):
+        '''Check file directory for file with duplicate name.
+        :return: True if duplicate exists; False if not.
+        :rtype: boolean
+        '''
         lists = list_all_lists()
         if self.name in lists:
             return True
         return False
         
     def list_name_invalid(self):
+        '''Check list name for special characters.
+        :return: True if contains special characters; False if not.
+        :rtype: boolean
+        '''
         return bool(re.search('[^a-zA-Z0-9\s]+$', self.name))
 
 
@@ -247,12 +256,10 @@ class Search:
     def fetch(self, type, term, start_index=0):
         '''Submit API get request & return response.
                 
-        If server responds with status code not in 200 range: prints error message 
-        with specific status code and type. If requests module raises exception, returns message 
-        with type if exception is connection error or timeout. If search returns no results, returns notification.
-                 
-        :return: Displays search results or error message with prompt to search again. 
-        :rtype: str
+        Displays search results or error message with prompt to search again. If server responds with status 
+        code not in 200 range: prints error message with specific status code and type. If requests module 
+        raises exception, returns message with type if exception is ConnectionError, HTTPError or Timeout. 
+        If search returns no results, returns notification.
         '''
         search_query = f'{self.query_dict[type]}{term}'
         url = f'https://www.googleapis.com/books/v1/volumes?q={search_query}&maxResults=5&startIndex={start_index}'
@@ -275,6 +282,7 @@ class Search:
                 self.search_again()
 
     def get_response(self, url):
+        '''Send get request to Google Books API containing user's search query & start index if not new search.'''
         try:
             response = requests.get(url)
             return response
@@ -295,6 +303,7 @@ class Search:
             print(style_output(f'Sorry, your search could not be completed. Please try again later or with a different query. (Error: {err})', 'warning'))
         
     def search_again(self):
+        '''Prompt user to begin a new search after search failure.'''
         print('\nWould you like to start a new search?')
         confirm = input('Please enter "y" to search or any other key to exit:  ')
         if confirm == 'y':
@@ -349,7 +358,7 @@ class SearchResults:
         }
 
     def menu(self):
-        '''Generate menu options depending on search results.'''
+        '''Populate menu options depending on contents of search results.'''
         options = ['prev', 'next', 'save', 'new', 'exit']
         if self.first == 1:
             options.remove('prev')
@@ -421,6 +430,8 @@ class ListsMain:
         File(list).load_as_list()
 
     def create_list(self):
+        '''Prompt user to enter name for new list and validate input. Create new list or 
+        display error message and repeat prompt if name is invalid.'''
         name = input('Please enter a name for the new list:  ').strip()
         if name:
             status = File(name).create()
@@ -453,13 +464,13 @@ class List:
         }
 
     def menu(self):
+        '''Populate menu options depending on contents of list.'''
         options = ['delete_book', 'move_book', 'delete_list', 'view_another', 'new_list', 'exit']
         if self.name == 'reading list':
             options.remove('delete_list')
         if not self.booklist:
             options.remove('move_book')
             options.remove('delete_book')
-        
         Menu(options, self.options_dict).print()
 
     def display(self):
