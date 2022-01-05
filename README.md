@@ -7,13 +7,11 @@ Search for books and save selections to a reading list.
 
 <p align="center">
   <a href="" rel="noopener">
-  <img src="books3.gif" alt="Project preview"></a></br>
+  <img src="books.png" alt="Project preview" height="400"></a></br>
 </p>
 </div>
 
 ## Table of Contents
-
----
 
 - [Getting Started](#getting_started)
 - [Testing](#testing)
@@ -35,8 +33,6 @@ Search for books and save selections to a reading list.
 
 ## Getting Started <a name = "getting_started"></a>
 
----
-
 ### Installing 
 
 Clone this repo from the terminal:
@@ -53,27 +49,23 @@ Launch the program:
 ```
 pipenv run python main.py
 ```
-<br><br>
-
+<br>
 
 ## Testing <a name = "testing"></a>
-
----
 
 Run tests:
 ```
 pipenv run python tests.py
 ```
-<br><br>
-
+<br>
 
 ## Usage <a name="usage"></a>
 
----
-
 ### Features
-- Search for books and receive up to 5 matching results at a time. 
-- Save search results to your reading list to view later.
+- Search for books by Title, Author, Subject, or Keyword.
+- View 5 books at a time with paginated search results. 
+- Create custom reading lists to store saved books.
+- Manage your reading lists by deleting or moving saved books.
 <br> 
 
 ### Navigation
@@ -84,22 +76,31 @@ pipenv run python tests.py
   3. Quit: exit application
 
 #### Search page - perform search and view results <br>
+  1. Show previous page of results
+  1. Show next page of results
   1. Save selected books
   2. Start a new search
-  3. View your reading list
+  3. View your reading lists
   4. Exit to home
 
-#### Reading Lists page - view your saved books <br>
-  1. Search
+#### Reading Lists page - manage your reading lists <br>
+  1. View a reading list
+  2. Create a new list
+  2. Exit to home
+
+#### List page - view your saved books <br>
+  1. Delete a saved book
+  2. Move a book to another list
+  2. Delete list
+  2. View another list
+  2. Create a new list
   2. Exit to home
 <br><br>
 
 
 ## Process: Revision (Second Round) <a name = "revision"></a>
 
----
-
-The following are my responses to the questions posed by my reviewer, as well my plan for how I'll proceed.
+The following are my responses to the questions posed by my reviewer, as well my initial plan for how I'll proceed with this revision.
 
 ### 1. Classes: 
 
@@ -136,8 +137,8 @@ The following are my responses to the questions posed by my reviewer, as well my
   - My response: The ability to delete entries from the reading list was one I thought would be useful, too! As I was testing my app, I kept coming up with features that I would want to implement and I had to keep reminding myself that I wasn't permitted to add extra features in my initial submission. <br>
   - Plan: I don't know yet how many of these I'll be able to complete given time constraints, but below is a list of features I'd like to add, grouped by page:
     - Home:
-      - Log in / log out 
-      - Create a new account
+      - ~~Log in / log out~~ 
+      - ~~Create a new account~~ -> decided multiple user accounts weren't necessary since all data is saved to a local machine. 
     - Search:
       - ✅ View more results
       - ✅ Specify type of search (author, title, subject, keyword)
@@ -147,10 +148,10 @@ The following are my responses to the questions posed by my reviewer, as well my
       - ✅ Delete an existing list
       - ✅ Delete an item in a list
       - ✅ Prevent user from saving duplicate items (Add ID property to book class)
-      - Mark item as read
-      - Show list of read items
+      - Mark item as read (future)
+      - Show list of read items (future)
     - Quit:
-      - Confirm quit
+      - ~~Confirm quit~~ -> implemented this, then decided I preferred UX without
 
 ### 6. Commits:
 
@@ -161,32 +162,32 @@ The following are my responses to the questions posed by my reviewer, as well my
 <br><br>
 
 ### Revision - Day One <a name = "revision - day-one"></a>
-- Goals:
+Goals:
   - Create outline of reviewer feedback and proposed next steps
   - Start refactoring suggested edits and pseudocoding new features
 
-- Wins: 
+Wins: 
   - ✅ Defined goals and tasks for revision process
   - ✅ Created new classes & methods to further modularize and streamline code
   - ✅ Implemented error handling for API calls (non 200-range status codes, timeouts, connection errors)
   - ✅ Converted existing comments to docstrings -- noticed that declaring the types of inputs and returns is definitely making it easier to refactor existing code
 
-- Blockers:
+Blockers:
   - ❓ Need to do research tomorrow about best practices for creating classes. I'm uncertain whether or not I'm going too far in my refactoring functions as class methods.
   - ⏳ Off to a slow start today due to the holiday.
 <br><br>
 
 ### Revision - Day Two <a name = "revision - day-two"></a>
-- Goals:
+Goals:
   - Begin implementing additional features
 
-- Wins: 
+Wins: 
   - ✅ Added validation to prevent duplicate books saved to a reading list.
   - ✅ Added feature allowing users to delete books from a reading list.
   - ✅ Added feature allowing users to choose type of search to perform (title, author, subject, keyword).
   - ✅ Added feature that paginates search results, allowing users to view all results by viewing next/previous page.
 
-- Blockers:
+Blockers:
   - ❓ Code is a mess! I know I'm introducing lots of lines of duplicate code right now (like replicating my PageMenu and SearchMenu classes instead of extending a Menu base class), but my logic right now is that it'll be simpler/faster to implement the new features and then see where I can streamline later.
   - ❓ Struggled to implement features that involve manipulating existing lists without corrupting files. Decided to take a break from this to work on other features -- will start up again tomorrow with fresh eyes.
   - ❓ Wondering how I can store data like most recent search results & current index in the app so I don't have to keep passing multiple params between the Menu class. 
@@ -194,26 +195,36 @@ The following are my responses to the questions posed by my reviewer, as well my
 <br><br>
 
 ### Revision - Day Three <a name = "revision - day-three"></a>
-- Goals:
+Goals:
   - Continue implementing additional features.
   - Clean up new code & look for ways to minimize duplication. I think I need to look at how my Menu classes are structured bc this is where a lot of the messiness currently originates. Probably need to break up the PageMenu class into different Menu classes that manage each page's respective actions.
 
--Wins:
+Wins:
   - ✅  I completely refactored my and restructured my classes to make sure relevant methods are grouped together and have access to the data that they need. Looks much tidier to me.
   - ✅  Starting to wrap up new features.
 
--Blockers:
+Blockers:
   - ⏳ It took me all day to complete this refactor... it felt like every time I made a change to how one of part of my code was structured, every other part of my app broke. This demonstrated to me the fact that the new features I added were not decoupled enough.
-
+<br><br>
 ### Revision - Day Four <a name = "revision - day-four"></a>
-- Goals:
-  - Finish debugging additional features.
-  - Begin testing new features & creating mocks to test API calls.
-  - Realized that my API error messages are not very user-friendly. Want to replace these with more detailed, less technical messages.
 
+Goals:
+- Finish debugging additional features.
+- Begin testing new features & creating mocks to test API calls.
+- Realized that my API error messages are not very user-friendly. Want to replace these with more detailed, less technical messages.
+
+Wins:
+  - ✅ Added tests mocking my API calls. 
+  - ✅ Debugging complete. Fixed a bug that had been bothering me since yesterday (selection menu was using a recursive call to prompt user for new selection if invalid selection was entered -- I needed to return the recursive call in order to pass the input after an unsuccessful input was entered.)
+  - ✅ Happy with the amount of new features. Decided it wasn't important to add additional accounts since all data is being saved to a local machine. 
+  - ✅ Added more validation to prevent bad user inputs in new features & to auto-generate menu options depending on contents of lists/search resutls.
+
+Blockers:
+  - ⏳ Took me forever to create tests for my API calls. Spent all night reading tutorials on mocks but couldn't get them working on my code -- eventually decided that the issue might not be my tests but the way my program was written. Wound up refactoring my code again to further separate operations relating to the API. When I parsed out the fetch request into its own class method, I was finally able to get these tests working.
+  - I also attempted to mock std.output to test my `print_header` function but was unsuccessful -- not sure why.
+
+<br><br>
 ## Process: Initial Submission (First Round) <a name = "intial-sub"></a>
-
----
 
 I decided to build this app in my weaker language of the two that I practice so far. I've just graduated a bootcamp concentrating on JavaScript & JS frameworks, so I thought this would be a great opportunity to refresh my novice/rusty Python skills and demonstrate my range as a developer.
 
@@ -285,34 +296,30 @@ Before I got started, I spent half a day researching approaches to building Pyth
   - ⏳ Spent a lot of today working on the tic-tac-toe code review, and wasn't able to do more research on testing mocks. Hoping I have the opportunity to submit more thorough tests with my revision of this project.
 <br><br>
 
-
 ## Future Implementation <a name = "future"></a>
 
----
-
-- 
-- Create additional tests to ensure print() and output() functions are working correctly
-
+- Add a Book page view displaying extended details about a selected book
+- Allow user to mark a saved book as read, and view a list of all saved books
+- Allow user to save personal notes & rating to saved books.
+- Create additional tests to ensure output() functions are working correctly
 <br><br>
-
 
 ## Author <a name = "author"></a>
 
----
-
 Sophia Kim <br/>
 mail@fifikim.com <br/>
+<a href="https://www.fifikim.com">Portfolio</a> 
 <a href="https://www.linkedin.com/in/fifikim">LinkedIn</a> 
 <br><br>
 
 
 ## Acknowledgements <a name = "acknowledgements"></a>
 
----
-
 Books and online references:
 - Clean Python, Sunil Kapil, Apress
 - Python Cookbook, David Beazley & Brian K. Jones, O'Reilly
+- <a href='https://realpython.com/python-mock-library/'>Understanding the Python Mocking Library</a>
+- <a href='https://realpython.com/testing-third-party-apis-with-mocks/'>Mocking External APIs</a>
 - <a href='https://docs.python.org/3/library/unittest.html'>Unittest</a>
 - <a href='https://www.codecademy.com/courses/learn-intermediate-python-3/lessons/int-python-unit-testing/'>More on Testing</a> (subscription required)
 - <a href='https://stackabuse.com/how-to-print-colored-text-in-python/'>Coloring terminal output</a>
